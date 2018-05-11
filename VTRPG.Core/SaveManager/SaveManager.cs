@@ -7,12 +7,16 @@ using System.Data.SQLite;
 
 namespace VTRPG.Core.SaveManager
 {
+    public delegate void SaveFileChangedEventHandeler(string File);
+
     public class SaveManager
     {
         public SaveManager(string SaveFile = "")
         {
             _SaveFile = SaveFile;
         }
+
+        public event SaveFileChangedEventHandeler SaveFileChangedEvent;
 
         private string _SaveFile = "";
         public string SaveFile
@@ -24,30 +28,9 @@ namespace VTRPG.Core.SaveManager
             set
             {
                 SaveFile = value;
-                // Event
+                SaveFileChangedEvent?.Invoke(value);
             }
         }
         public string SQLiteConnectionString { get { return $"Data Source={SaveFile};"; } }
-
-        /// <summary>
-        /// Creates a new savefile
-        /// </summary>
-        public void Init()
-        {
-            using (SQLiteConnection conn = new SQLiteConnection())
-            using (SQLiteTransaction trans = conn.BeginTransaction())
-            {
-                conn.Open();
-                using (SQLiteCommand cmd = new SQLiteCommand("", conn, trans))
-                {
-
-                }
-                using (SQLiteCommand cmd = new SQLiteCommand("", conn, trans))
-                {
-
-                }
-                conn.Close();
-            }
-        }
     }
 }
