@@ -70,9 +70,9 @@ Here is a list of all the projects inside the solution and their state
 |-                         |-                      |-             |-                    |
 
 ## Useful Links
-(Coming Soon) -> Trello board for the projects roadmap
-(Coming Soon) -> Discord server to join and chat to the developers or other people (Note, The server is still under the old project name)
-(Coming Soon) -> Sentry Telemetry Pannel for developers to get crash information to assist in fixing buggs
-http://www.virtual-trpg.com (Not Avaliable) -> VTRPG project website for information, viewing docs, guides and downloading resources...
-http://Listings.virtual-trpg.com (Not Avaliable) -> VTRPG campaign listings site, GM's post your campaigns here if your looking for players. This service will allow for cloud saving your saves to keep a backup as well as a way to automate the player application process
-http://Forums.virtual-trpg.com (Not Avaliable) -> VTRPG forums, Discuss and talk to developers outside of discord here, post your resources, tips and guides here
+(Coming Soon) -> Trello board for the projects roadmap<br>
+(Coming Soon) -> Discord server to join and chat to the developers or other people (Note, The server is under the old name)<br>
+(Coming Soon) -> Sentry Telemetry Pannel for developers to get crash information to assist in fixing bugs<br>
+http://www.virtual-trpg.com (Not Avaliable) -> VTRPG project website for information, viewing docs, guides and downloading resources...<br>
+http://Listings.virtual-trpg.com (Not Avaliable) -> VTRPG campaign listings site, GM's post your campaigns here if your looking for players. This service will allow for cloud saving your saves to keep a backup as well as a way to automate the player application process (Optional)<br>
+http://Forums.virtual-trpg.com (Not Avaliable) -> VTRPG forums, Discuss and talk to developers outside of discord here, post your resources, tips and guides here<br>
