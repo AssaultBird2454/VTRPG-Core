@@ -25,6 +25,26 @@ namespace VTRPG.Core.SettingsManager
 
             }
         }
+        internal void InitSaveFile()
+        {
+            using (SQLiteConnection conn = new SQLiteConnection(Manager.SQLiteConnectionString).OpenAndReturn())
+            using (SQLiteTransaction transaction = conn.BeginTransaction())
+            {
+                try
+                {
+                    // Init Settings Table
+                    using (SQLiteCommand cmd = new SQLiteCommand(Settings.Save_Create_tblSettings, conn, transaction))
+                        cmd.ExecuteNonQuery();
+
+                    transaction.Commit();
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    // Failed
+                }
+            }
+        }
 
         private void Manager_SaveFileChangedEvent(string File)
         {

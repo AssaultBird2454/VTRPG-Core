@@ -6,29 +6,14 @@ using System.Threading.Tasks;
 
 namespace VTRPG.Core.Authentication.Data
 {
-    /// <summary>
-    /// Defines different states or errors that can occure wile registering an account
-    /// </summary>
-    public enum RegisterState
+    public class UsernameTakenException : Exception { }
+    public class RegristrationErrorException : Exception
     {
-        OK,
-        UsernameTaken,
-        SaltTaken,
-        Error,
-        Unknown
+        public Exception ex;
     }
 
-    /// <summary>
-    /// Defines different states or errors that can occure wile authenticating
-    /// </summary>
-    public enum AuthState
-    {
-        OK,
-        UnknownUser,
-        BadPassword,
-        Locked,
-        Disabled,
-        Error,
-        Unknown
-    }
+    public class UnknownUserException : Exception { }
+    public class BadPasswordException : Exception { }
+    public class AccountLockedException : Exception { }
+    public class AccountDisabledException : Exception { }
 }

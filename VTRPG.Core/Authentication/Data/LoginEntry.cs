@@ -10,7 +10,6 @@ namespace VTRPG.Core.Authentication.Data
     {
         public int UID { get; set; }
         public string Username { get; set; }
-        public int Iterations { get; set; }
         public string Salt { get; set; }
         public string Hash { get; set; }
         public bool Disabled { get; set; }
