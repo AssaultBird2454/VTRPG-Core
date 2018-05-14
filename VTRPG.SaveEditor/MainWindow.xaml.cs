@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
+using VTRPG.Core.SaveManager;
 
 namespace VTRPG.SaveEditor
 {
@@ -23,6 +24,9 @@ namespace VTRPG.SaveEditor
         public MainWindow()
         {
             InitializeComponent();
+
+            SaveManager Manager = new SaveManager(Path.Combine(Environment.CurrentDirectory, "SaveFileInit.vtrpg.db"));
+            Manager.InitSave();
         }
     }
 }
