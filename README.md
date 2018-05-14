@@ -68,7 +68,7 @@ Here is a list of all the projects inside the solution and their state
 |-                         |-                      |-             |-                     |
 
 ## Useful Links
-(Coming Soon) -> Trello board for the projects roadmap<br>
+https://trello.com/b/UN2UHTKY -> Trello board for the projects roadmap<br>
 (Coming Soon) -> Discord server to join and chat to the developers or other people (Note, The server is under the old name)<br>
 (Coming Soon) -> Sentry Telemetry Panel for developers to get crash information to assist in fixing bugs<br>
 http://www.virtual-trpg.com (Not Available) -> VTRPG project website for information, viewing docs, guides and downloading resources...<br>

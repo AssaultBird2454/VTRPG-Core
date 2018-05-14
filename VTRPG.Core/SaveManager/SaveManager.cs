@@ -10,7 +10,7 @@ namespace VTRPG.Core.SaveManager
     public delegate void SaveFileChangedEventHandeler(string File);
     public delegate void SettingsManagerChangedEventHandeler(SettingsManager.SettingsManager Mgr);
     public delegate void AuthManagerChangedEventHandeler(Authentication.AuthenticationManager Mgr);
-
+  
     public class SaveManager
     {
         public SaveManager(string SaveFile = "")
