@@ -38,10 +38,10 @@ namespace VTRPG.Core.SettingsManager
 
                     transaction.Commit();
                 }
-                catch
+                catch (Exception ex)
                 {
-                    transaction.Rollback();
-                    // Failed
+                    transaction.Rollback();// Rollback
+                    throw ex;
                 }
             }
         }

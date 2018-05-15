@@ -105,10 +105,10 @@ namespace VTRPG.Core.Authentication
 
                     transaction.Commit();// Commit
                 }
-                catch
+                catch(Exception ex)
                 {
                     transaction.Rollback();// Rollback
-                    // Failed
+                    throw ex;
                 }
             }
 

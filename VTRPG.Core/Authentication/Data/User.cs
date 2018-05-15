@@ -12,7 +12,7 @@ namespace VTRPG.Core.Authentication.Data
     {
         private SaveManager.SaveManager _Manager;
 
-        public User(SaveManager.SaveManager Manager, int ID)
+        internal User(SaveManager.SaveManager Manager, int ID)
         {
             UID = ID;
             _Manager = Manager;
