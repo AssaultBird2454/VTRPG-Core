@@ -64,7 +64,7 @@ namespace VTRPG.Core.Permissions.Data
             }
         }
 
-        public List<Authentication.Data.User> Members
+        public IEnumerable<Authentication.Data.User> Members
         {
             get
             {
@@ -87,6 +87,9 @@ namespace VTRPG.Core.Permissions.Data
 
         public bool AddMember(int UID)
         {
+            if (!_Manager.AuthManager.HasUser(UID))
+                throw new Authentication.Data.UnknownUserException();
+
             if (HasMamber(UID))
                 throw new UserAlreadyMemberException();
 
@@ -133,8 +136,8 @@ namespace VTRPG.Core.Permissions.Data
         }
         public bool HasMamber(int UID)
         {
-            if (!HasMamber(UID))
-                throw new UserNotMemberException();
+            if (!_Manager.AuthManager.HasUser(UID))
+                throw new Authentication.Data.UnknownUserException();
 
             using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
             {
@@ -155,13 +158,26 @@ namespace VTRPG.Core.Permissions.Data
             }
         }
 
-        //public List<KeyValuePair<string, bool>> Permissions
-        //{
-        //    get
-        //    {
+        public IEnumerable<KeyValuePair<string, bool>> Permissions
+        {
+            get
+            {
+                using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
+                using (SQLiteCommand cmd = new SQLiteCommand($"SELECT Node, Allow FROM tblGroupPermissions WHERE GID = {GID};", conn))
+                {
+                    List<KeyValuePair<string, bool>> Perms = new List<KeyValuePair<string, bool>>();
 
-        //    }
-        //}
+                    using (SQLiteDataReader reader = cmd.ExecuteReader())
+                        while (reader.Read())
+                        {
+                            Perms.Add(new KeyValuePair<string, bool>(reader.GetString(0), reader.GetBoolean(1)));
+                        }
+
+                    conn.Close();
+                    return Perms;
+                }
+            }
+        }
 
         //public bool AddPermission(string Node, bool Allow = true)
         //{
@@ -171,13 +187,70 @@ namespace VTRPG.Core.Permissions.Data
         //{
         //    // Delete
         //}
-        //public bool HasPermission(string Node)
-        //{
-        //    // Select
-        //}
+        public bool HasPermission(string Node)
+        {
+            List<string> Nodes = Node.Split('.').ToList();
+
+            using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
+                while (true)
+                {
+                    using (SQLiteCommand cmd = new SQLiteCommand($"SELECT Node, Allow FROM tblGroupPermissions WHERE GID = {GID} AND Node = \"{CombineNodes(Nodes)}\";", conn))
+                    {
+
+                        if (cmd.ExecuteScalar() == null)
+                        {
+                            Nodes.RemoveAt(Nodes.Count - 1);
+
+                            if (Nodes.Count <= 0)
+                            {
+                                conn.Close();
+                                return false;
+                            }
+
+                            continue;
+                        }
+                        else
+                        {
+                            conn.Close();
+                            return true;
+                        }
+                    }
+                }
+        }
+        public bool HasPermissionEntry(string Node)
+        {
+            using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
+            using (SQLiteCommand cmd = new SQLiteCommand($"SELECT Node FROM tblGroupPermissions WHERE GID = {GID};", conn))
+            {
+
+                if (cmd.ExecuteScalar() == null)
+                {
+                    conn.Close();
+                    return false;
+                }
+                else
+                {
+                    conn.Close();
+                    return true;
+                }
+            }
+        }
         //public bool UpdatePermission(string Node, bool Allow)
         //{
         //    // Update
         //}
+
+        public string CombineNodes(List<string> Node)
+        {
+            string CheckNode = "";
+            for (int i = 0; i <= Node.Count - 1; i++)
+            {
+                CheckNode += Node[i];
+                if (i < Node.Count - 1)
+                    CheckNode += '.';
+            }
+
+            return CheckNode;
+        }
     }
 }
