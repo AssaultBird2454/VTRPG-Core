@@ -123,6 +123,13 @@
   <data name="Save_Create_tblUsers" xml:space="preserve">
     <value>CREATE TABLE "tblUsers" ( `UID` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `Name` TEXT NOT NULL, `Character_Name` TEXT NOT NULL, `UserColor` TEXT NOT NULL DEFAULT '#FFFF0000', `isGM` INTEGER NOT NULL DEFAULT 0 )</value>
   </data>
+  <data name="Save_Create_trgAuth_UserDeleted" xml:space="preserve">
+    <value>CREATE TRIGGER trgAuth_UserDeleted BEFORE DELETE 
+ON tblUsers
+BEGIN
+ DELETE FROM tblAuth WHERE UID = OLD.UID;
+END;</value>
+  </data>
   <data name="Setting_Default_AttemptCount" xml:space="preserve">
     <value>5</value>
   </data>

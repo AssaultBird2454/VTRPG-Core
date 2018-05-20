@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -35,6 +36,19 @@ namespace CoreTest
 
             Assert.AreEqual(Name, group.Name);
             Assert.AreEqual(Desc, group.Description);
+            Assert.AreEqual(Manager.PermissionsManager.GroupExists(1), true);
+            Assert.AreEqual(Manager.PermissionsManager.GroupExists(Name), true);
+            Assert.AreEqual(Manager.PermissionsManager.GroupExists(2), false);
+            Assert.AreEqual(Manager.PermissionsManager.GroupExists("Fake"), false);
+
+            Assert.AreEqual(Manager.PermissionsManager.GetGroup(1).GID, 1);
+            Assert.AreEqual(Manager.PermissionsManager.GetGroup(Name).GID, 1);
+            Assert.AreEqual(Manager.PermissionsManager.GetGroup(2), null);
+            Assert.AreEqual(Manager.PermissionsManager.GetGroup("Fake"), null);
+
+            Manager.PermissionsManager.DeleteGroup(1);
+            Assert.AreEqual(Manager.PermissionsManager.GroupExists(1), false);
+            Assert.AreEqual(Manager.PermissionsManager.GroupExists(Name), false);
 
             try
             {
@@ -101,10 +115,78 @@ namespace CoreTest
             }
             catch (VTRPG.Core.Authentication.Data.UnknownUserException) { }
 
+            // Remove
+            group.RemoveMember(user1.UID);
+
+            // Test
+            try
+            {
+                if (group.HasMamber(user1.UID))
+                    Assert.Fail("Failed to identify that a user is not a member of a group");
+            }
+            catch (VTRPG.Core.Authentication.Data.UnknownUserException)
+            {
+                Assert.Fail("Failed to identify that a user does exist");
+            }
+
             // Clean Up
             try
             {
                 File.Delete(Path.Combine(Environment.CurrentDirectory, "Group_GroupMembership.vtrpg.db"));
+            }
+            catch { }
+        }
+
+        [TestMethod]
+        public void GroupPermissions()
+        {
+            VTRPG.Core.SaveManager.SaveManager Manager;
+
+            VTRPG.Core.Permissions.Data.Group group;
+            try
+            {
+                try
+                {
+                    File.Delete(Path.Combine(Environment.CurrentDirectory, "Group_GroupPermissions.vtrpg.db"));
+                }
+                catch { }
+                Manager = new VTRPG.Core.SaveManager.SaveManager(Path.Combine(Environment.CurrentDirectory, "Group_GroupPermissions.vtrpg.db"));
+                Manager.InitSave();
+
+                group = Manager.PermissionsManager.CreateGroup("Test Group", "This Group is a test");
+            }
+            catch
+            {
+                Assert.Inconclusive();
+                return;
+            }
+
+            // Test
+            bool add1 = group.AddPermission("System.Test.Permission");
+            bool add2 = group.AddPermission("System.Test.Permission");
+            bool add3 = group.AddPermission("System.Plugins", false);
+
+            Assert.AreEqual(add1, true);
+            Assert.AreEqual(add2, false);
+            Assert.AreEqual(add3, true);
+
+            IReadOnlyList<KeyValuePair<string, bool>> perms = group.Permissions;
+
+            Assert.AreEqual(perms[0].Value, true);
+            Assert.AreEqual(perms[1].Value, false);
+
+            Assert.AreEqual(group.HasPermissionEntry("System.Test.Permission"), true);
+            Assert.AreEqual(group.HasPermissionEntry("NoPermission"), false);
+
+            Assert.AreEqual(group.HasPermission("System.Test.Permission"), true);
+            Assert.AreEqual(group.HasPermission("System.Plugins"), false);
+
+            group.UpdatePermission("System.Test.Permission", false);
+            Assert.AreEqual(group.HasPermission("System.Test.Permission"), false);
+
+            try
+            {
+                File.Delete(Path.Combine(Environment.CurrentDirectory, "Group_GroupPermissions.vtrpg.db"));
             }
             catch { }
         }

@@ -158,7 +158,7 @@ namespace VTRPG.Core.Permissions.Data
             }
         }
 
-        public IEnumerable<KeyValuePair<string, bool>> Permissions
+        public IReadOnlyList<KeyValuePair<string, bool>> Permissions
         {
             get
             {
@@ -179,14 +179,60 @@ namespace VTRPG.Core.Permissions.Data
             }
         }
 
-        //public bool AddPermission(string Node, bool Allow = true)
-        //{
-        //    // Insert
-        //}
-        //public bool RemovePermission(string Node)
-        //{
-        //    // Delete
-        //}
+        public bool AddPermission(string Node, bool Allow = true)
+        {
+            if (HasPermissionEntry(Node))
+                return false;
+
+            using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
+            using (SQLiteTransaction transaction = conn.BeginTransaction())
+            using (SQLiteCommand cmd = new SQLiteCommand($"INSERT INTO tblGroupPermissions (\"GID\", \"Node\", \"Allow\") VALUES ({GID}, \"{Node}\", {Convert.ToInt32(Allow)});", conn, transaction))
+            {
+                try
+                {
+                    int Changes = cmd.ExecuteNonQuery();
+                    transaction.Commit();
+                    conn.Close();
+
+                    if (Changes == 0)
+                        return false;
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    conn.Close();
+                    throw ex;
+                }
+            }
+        }
+        public bool RemovePermission(string Node)
+        {
+            if (!HasPermissionEntry(Node))
+                return false;
+
+            using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
+            using (SQLiteTransaction transaction = conn.BeginTransaction())
+            using (SQLiteCommand cmd = new SQLiteCommand($"DELETE FROM tblGroupPermissions WHERE GID = {GID} AND Node = \"{Node}\";", conn, transaction))
+            {
+                try
+                {
+                    int Changes = cmd.ExecuteNonQuery();
+                    transaction.Commit();
+                    conn.Close();
+
+                    if (Changes == 0)
+                        return false;
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    conn.Close();
+                    throw ex;
+                }
+            }
+        }
         public bool HasPermission(string Node)
         {
             List<string> Nodes = Node.Split('.').ToList();
@@ -194,7 +240,7 @@ namespace VTRPG.Core.Permissions.Data
             using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
                 while (true)
                 {
-                    using (SQLiteCommand cmd = new SQLiteCommand($"SELECT Node, Allow FROM tblGroupPermissions WHERE GID = {GID} AND Node = \"{CombineNodes(Nodes)}\";", conn))
+                    using (SQLiteCommand cmd = new SQLiteCommand($"SELECT Node FROM tblGroupPermissions WHERE GID = {GID} AND Node = \"{CombineNodes(Nodes)}\" AND Allow = 1;", conn))
                     {
 
                         if (cmd.ExecuteScalar() == null)
@@ -220,7 +266,7 @@ namespace VTRPG.Core.Permissions.Data
         public bool HasPermissionEntry(string Node)
         {
             using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
-            using (SQLiteCommand cmd = new SQLiteCommand($"SELECT Node FROM tblGroupPermissions WHERE GID = {GID};", conn))
+            using (SQLiteCommand cmd = new SQLiteCommand($"SELECT Node FROM tblGroupPermissions WHERE GID = {GID} AND Node = \"{Node}\";", conn))
             {
 
                 if (cmd.ExecuteScalar() == null)
@@ -235,10 +281,33 @@ namespace VTRPG.Core.Permissions.Data
                 }
             }
         }
-        //public bool UpdatePermission(string Node, bool Allow)
-        //{
-        //    // Update
-        //}
+        public bool UpdatePermission(string Node, bool Allow)
+        {
+            if (!HasPermissionEntry(Node))
+                return false;
+
+            using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
+            using (SQLiteTransaction transaction = conn.BeginTransaction())
+            using (SQLiteCommand cmd = new SQLiteCommand($"UPDATE tblGroupPermissions SET \"Allow\" = {Convert.ToInt32(Allow)} WHERE GID = {GID} AND Node = \"{Node}\";", conn, transaction))
+            {
+                try
+                {
+                    int Changes = cmd.ExecuteNonQuery();
+                    transaction.Commit();
+                    conn.Close();
+
+                    if (Changes == 0)
+                        return false;
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    conn.Close();
+                    throw ex;
+                }
+            }
+        }
 
         public string CombineNodes(List<string> Node)
         {

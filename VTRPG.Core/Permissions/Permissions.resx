@@ -129,4 +129,19 @@
   <data name="Save_Create_tblUserPermissions" xml:space="preserve">
     <value>CREATE TABLE "tblUserPermissions" ( `ID` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `UID` INTEGER NOT NULL, `Node` TEXT NOT NULL, `Allow` INTEGER NOT NULL DEFAULT 1, FOREIGN KEY(`UID`) REFERENCES `tblUsers`(`UID`) )</value>
   </data>
+  <data name="Save_Create_trgPermissions_GroupDeleted" xml:space="preserve">
+    <value>CREATE TRIGGER trgPermissions_GroupDeleted BEFORE DELETE ON tblGroups 
+BEGIN
+	DELETE FROM tblGroupMembers WHERE GID = OLD.GID;
+	DELETE FROM tblGroupPermissions WHERE GID = OLD.GID;
+END</value>
+  </data>
+  <data name="Save_Create_trgPermissions_UserDeleted" xml:space="preserve">
+    <value>CREATE TRIGGER trgPermissions_UserDeleted BEFORE DELETE 
+ON tblUsers
+BEGIN
+ DELETE FROM tblGroupMembers WHERE UID = OLD.UID;
+ DELETE FROM tblUserPermissions WHERE UID = OLD.UID;
+END;</value>
+  </data>
 </root>

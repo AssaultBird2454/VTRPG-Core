@@ -46,6 +46,13 @@ namespace VTRPG.Core.Permissions
                     using (SQLiteCommand cmd = new SQLiteCommand(Permissions.Save_Create_tblUserPermissions, conn, transaction))
                         cmd.ExecuteNonQuery();
 
+                    // Init UserDeleted Trigger (Depends on the Auth Manager)
+                    using (SQLiteCommand cmd = new SQLiteCommand(Permissions.Save_Create_trgPermissions_UserDeleted, conn, transaction))
+                        cmd.ExecuteNonQuery();
+                    // Init GroupDeleted Trigger
+                    using (SQLiteCommand cmd = new SQLiteCommand(Permissions.Save_Create_trgPermissions_GroupDeleted, conn, transaction))
+                        cmd.ExecuteNonQuery();
+
                     transaction.Commit();
                 }
                 catch (Exception ex)
@@ -82,6 +89,121 @@ namespace VTRPG.Core.Permissions
                 {
                     transaction.Rollback();
                     throw ex;
+                }
+            }
+        }
+
+        public Data.Group GetGroup(int GID)
+        {
+            if (!GroupExists(GID))
+                return null;
+
+            // Get Group
+            return new Data.Group(Manager, GID);// ID
+        }
+        public Data.Group GetGroup(string Name)
+        {
+            if (!GroupExists(Name))
+                return null;
+
+            using (SQLiteConnection conn = new SQLiteConnection(Manager.SQLiteConnectionString).OpenAndReturn())
+            using (SQLiteCommand cmd = new SQLiteCommand($"SELECT GID FROM tblGroups WHERE Name = \"{Name}\";", conn))
+            {
+                try
+                {
+                    int ID = Convert.ToInt32(cmd.ExecuteScalar());
+
+                    conn.Close();
+                    return new Data.Group(Manager, ID);
+                }
+                catch
+                {
+                    conn.Close();
+                    return null;
+                }
+            }
+        }
+
+        public bool DeleteGroup(int GID)
+        {
+            if (!GroupExists(GID))
+                return false;
+
+            using (SQLiteConnection conn = new SQLiteConnection(Manager.SQLiteConnectionString).OpenAndReturn())
+            using (SQLiteTransaction transaction = conn.BeginTransaction())
+            using (SQLiteCommand cmd = new SQLiteCommand($"DELETE FROM tblGroups WHERE GID = {GID}", conn, transaction))
+            {
+                try
+                {
+                    if (cmd.ExecuteNonQuery() >= 1)
+                    {
+                        transaction.Commit();
+                        conn.Close();
+                        return true;
+                    }
+                    else
+                    {
+                        transaction.Commit();
+                        conn.Close();
+                        return false;
+                    }
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    conn.Close();
+                    return false;
+                }
+            }
+        }
+
+        public bool GroupExists(int GID)
+        {
+            using (SQLiteConnection conn = new SQLiteConnection(Manager.SQLiteConnectionString).OpenAndReturn())
+            using (SQLiteCommand cmd = new SQLiteCommand($"SELECT GID FROM tblGroups WHERE GID = {GID};", conn))
+            {
+                try
+                {
+                    if (cmd.ExecuteScalar() == null)
+                    {
+                        conn.Close();
+                        return false;
+                    }
+                    else
+                    {
+                        conn.Close();
+                        return true;
+                    }
+                }
+                catch
+                {
+                    conn.Close();
+                    return false;
+                }
+            }
+        }
+        public bool GroupExists(string Name)
+        {
+            using (SQLiteConnection conn = new SQLiteConnection(Manager.SQLiteConnectionString).OpenAndReturn())
+            using (SQLiteCommand cmd = new SQLiteCommand($"SELECT GID FROM tblGroups WHERE Name = \"{Name}\";", conn))
+            {
+                try
+                {
+                    if (cmd.ExecuteScalar() == null)
+                    {
+                        conn.Close();
+                        return false;
+                    }
+                    else
+                    {
+                        conn.Close();
+                        return true;
+                    }
+                }
+                catch
+                {
+                    conn.Close();
+                    return false;
                 }
             }
         }

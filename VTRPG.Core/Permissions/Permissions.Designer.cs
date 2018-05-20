@@ -95,5 +95,32 @@ namespace VTRPG.Core.Permissions {
                 return ResourceManager.GetString("Save_Create_tblUserPermissions", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CREATE TRIGGER trgPermissions_GroupDeleted BEFORE DELETE ON tblGroups 
+        ///BEGIN
+        ///	DELETE FROM tblGroupMembers WHERE GID = OLD.GID;
+        ///	DELETE FROM tblGroupPermissions WHERE GID = OLD.GID;
+        ///END.
+        /// </summary>
+        internal static string Save_Create_trgPermissions_GroupDeleted {
+            get {
+                return ResourceManager.GetString("Save_Create_trgPermissions_GroupDeleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CREATE TRIGGER trgPermissions_UserDeleted BEFORE DELETE 
+        ///ON tblUsers
+        ///BEGIN
+        /// DELETE FROM tblGroupMembers WHERE UID = OLD.UID;
+        /// DELETE FROM tblUserPermissions WHERE UID = OLD.UID;
+        ///END;.
+        /// </summary>
+        internal static string Save_Create_trgPermissions_UserDeleted {
+            get {
+                return ResourceManager.GetString("Save_Create_trgPermissions_UserDeleted", resourceCulture);
+            }
+        }
     }
 }
