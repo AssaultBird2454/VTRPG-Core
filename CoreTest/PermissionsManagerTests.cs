@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -187,6 +188,67 @@ namespace CoreTest
             try
             {
                 File.Delete(Path.Combine(Environment.CurrentDirectory, "Group_GroupPermissions.vtrpg.db"));
+            }
+            catch { }
+        }
+
+        [TestMethod]
+        public void UserPermissions()
+        {
+            VTRPG.Core.SaveManager.SaveManager Manager;
+
+            VTRPG.Core.Permissions.Data.Group group;
+            VTRPG.Core.Authentication.Data.User user;
+            try
+            {
+                try
+                {
+                    File.Delete(Path.Combine(Environment.CurrentDirectory, "UserPermissions.vtrpg.db"));
+                }
+                catch { }
+                Manager = new VTRPG.Core.SaveManager.SaveManager(Path.Combine(Environment.CurrentDirectory, "UserPermissions.vtrpg.db"));
+                Manager.InitSave();
+
+                group = Manager.PermissionsManager.CreateGroup("Test Group", "This Group is a test");
+                user = Manager.AuthManager.RegisterUser("Test User 1", "Test User 1", Color.Bisque, "Test User 1", "Test User 1", 1, false);
+            }
+            catch
+            {
+                Assert.Inconclusive();
+                return;
+            }
+
+            user.AddPermission("Test.1", true);
+            user.AddPermission("Test.2", false);
+            group.AddPermission("Test.3", true);
+            group.AddPermission("Test.4", false);
+            group.AddMember(user.UID);
+
+            IReadOnlyList<KeyValuePair<string, bool>> perms = user.Permissions;
+            Assert.AreEqual(perms[0].Key, "Test.1");
+            Assert.AreEqual(perms[1].Key, "Test.2");
+            Assert.AreEqual(perms[2].Key, "Test.3");
+            Assert.AreEqual(perms[3].Key, "Test.4");
+            Assert.AreEqual(perms[0].Value, true);
+            Assert.AreEqual(perms[1].Value, false);
+            Assert.AreEqual(perms[2].Value, true);
+            Assert.AreEqual(perms[3].Value, false);
+
+            Assert.AreEqual(user.HasPermission("Test.1"), true);
+            Assert.AreEqual(user.HasPermissionEntry("Test.1"), true);
+
+            user.UpdatePermission("Test.1", false);
+            user.RemovePermission("Test.2");
+            Assert.AreEqual(user.HasPermission("Test.1"), false);
+            Assert.AreEqual(user.HasPermissionEntry("Test.1"), true);
+            Assert.AreEqual(user.HasPermission("Test.2"), false);
+            Assert.AreEqual(user.HasPermissionEntry("Test.2"), false);
+
+            // DO Stuff
+
+            try
+            {
+                File.Delete(Path.Combine(Environment.CurrentDirectory, "UserPermissions.vtrpg.db"));
             }
             catch { }
         }

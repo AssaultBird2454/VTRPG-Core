@@ -68,6 +68,31 @@ namespace VTRPG.Core.Permissions
         #endregion
 
         #region Groups
+        public IReadOnlyList<Data.Group> Groups()
+        {
+            using (SQLiteConnection conn = new SQLiteConnection(Manager.SQLiteConnectionString).OpenAndReturn())
+            using (SQLiteCommand cmd = new SQLiteCommand("SELECT GID FROM tblGroups", conn))
+            {
+                try
+                {
+                    List<Data.Group> GroupList = new List<Data.Group>();
+                    using (SQLiteDataReader dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                            GroupList.Add(new Data.Group(Manager, dr.GetInt32(0)));
+                    }
+
+                    conn.Close();
+                    return GroupList;
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw ex;
+                }
+            }
+        }
+
         public Data.Group CreateGroup(string Name, string Desc)
         {
             using (SQLiteConnection conn = new SQLiteConnection(Manager.SQLiteConnectionString).OpenAndReturn())
@@ -211,6 +236,21 @@ namespace VTRPG.Core.Permissions
 
         #region Users
 
+        #endregion
+
+        #region Helper
+        public static string CombineNodes(List<string> Node)
+        {
+            string CheckNode = "";
+            for (int i = 0; i <= Node.Count - 1; i++)
+            {
+                CheckNode += Node[i];
+                if (i < Node.Count - 1)
+                    CheckNode += '.';
+            }
+
+            return CheckNode;
+        }
         #endregion
     }
 }

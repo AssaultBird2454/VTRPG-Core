@@ -35,6 +35,9 @@ namespace VTRPG.Core.SettingsManager
                     // Init Settings Table
                     using (SQLiteCommand cmd = new SQLiteCommand(Settings.Save_Create_tblSettings, conn, transaction))
                         cmd.ExecuteNonQuery();
+                    // Init Settings Index
+                    using (SQLiteCommand cmd = new SQLiteCommand(Settings.Save_Create_indSettings, conn, transaction))
+                        cmd.ExecuteNonQuery();
 
                     transaction.Commit();
                 }

@@ -240,7 +240,7 @@ namespace VTRPG.Core.Permissions.Data
             using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
                 while (true)
                 {
-                    using (SQLiteCommand cmd = new SQLiteCommand($"SELECT Node FROM tblGroupPermissions WHERE GID = {GID} AND Node = \"{CombineNodes(Nodes)}\" AND Allow = 1;", conn))
+                    using (SQLiteCommand cmd = new SQLiteCommand($"SELECT Node FROM tblGroupPermissions WHERE GID = {GID} AND Node = \"{PermissionsManager.CombineNodes(Nodes)}\" AND Allow = 1;", conn))
                     {
 
                         if (cmd.ExecuteScalar() == null)
@@ -307,19 +307,6 @@ namespace VTRPG.Core.Permissions.Data
                     throw ex;
                 }
             }
-        }
-
-        public string CombineNodes(List<string> Node)
-        {
-            string CheckNode = "";
-            for (int i = 0; i <= Node.Count - 1; i++)
-            {
-                CheckNode += Node[i];
-                if (i < Node.Count - 1)
-                    CheckNode += '.';
-            }
-
-            return CheckNode;
         }
     }
 }

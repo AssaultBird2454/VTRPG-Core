@@ -18,6 +18,7 @@ namespace VTRPG.Core.Authentication.Data
             _Manager = Manager;
         }
 
+        #region Data
         public int UID { get; private set; }
         public string Name
         {
@@ -63,7 +64,8 @@ namespace VTRPG.Core.Authentication.Data
                 }
             }
         }
-        public Color UserColor {
+        public Color UserColor
+        {
             get
             {
                 using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
@@ -84,7 +86,8 @@ namespace VTRPG.Core.Authentication.Data
                 }
             }
         }
-        public bool isGM {
+        public bool isGM
+        {
             get
             {
                 using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
@@ -105,7 +108,172 @@ namespace VTRPG.Core.Authentication.Data
                 }
             }
         }
+        #endregion
 
+        #region Permissions
+        public IReadOnlyList<KeyValuePair<string, bool>> Permissions
+        {
+            get
+            {
+                using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
+                {
+                    List<KeyValuePair<string, bool>> Perms = new List<KeyValuePair<string, bool>>();
+                    using (SQLiteCommand cmd = new SQLiteCommand($"SELECT Node, Allow FROM tblUserPermissions WHERE UID = {UID};", conn))
+                    {
+                        using (SQLiteDataReader reader = cmd.ExecuteReader())
+                            while (reader.Read())
+                            {
+                                Perms.Add(new KeyValuePair<string, bool>(reader.GetString(0), reader.GetBoolean(1)));
+                            }
+                    }
+
+                    foreach (VTRPG.Core.Permissions.Data.Group group in _Manager.PermissionsManager.Groups())
+                        if (group.HasMamber(UID))
+                            using (SQLiteCommand cmd = new SQLiteCommand($"SELECT Node, Allow FROM tblGroupPermissions WHERE GID = {group.GID};", conn))
+                            {
+                                using (SQLiteDataReader reader = cmd.ExecuteReader())
+                                    while (reader.Read())
+                                    {
+                                        Perms.Add(new KeyValuePair<string, bool>(reader.GetString(0), reader.GetBoolean(1)));
+                                    }
+                            }
+
+                    conn.Close();
+                    return Perms;
+                }
+            }
+        }
+
+        public bool AddPermission(string Node, bool Allow = true)
+        {
+            if (HasPermissionEntry(Node))
+                return false;
+
+            using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
+            using (SQLiteTransaction transaction = conn.BeginTransaction())
+            using (SQLiteCommand cmd = new SQLiteCommand($"INSERT INTO tblUserPermissions (\"UID\", \"Node\", \"Allow\") VALUES ({UID}, \"{Node}\", {Convert.ToInt32(Allow)});", conn, transaction))
+            {
+                try
+                {
+                    int Changes = cmd.ExecuteNonQuery();
+                    transaction.Commit();
+                    conn.Close();
+
+                    if (Changes == 0)
+                        return false;
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    conn.Close();
+                    throw ex;
+                }
+            }
+        }
+        public bool RemovePermission(string Node)
+        {
+            if (!HasPermissionEntry(Node))
+                return false;
+
+            using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
+            using (SQLiteTransaction transaction = conn.BeginTransaction())
+            using (SQLiteCommand cmd = new SQLiteCommand($"DELETE FROM tblUserPermissions WHERE UID = {UID} AND Node = \"{Node}\";", conn, transaction))
+            {
+                try
+                {
+                    int Changes = cmd.ExecuteNonQuery();
+                    transaction.Commit();
+                    conn.Close();
+
+                    if (Changes == 0)
+                        return false;
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    conn.Close();
+                    throw ex;
+                }
+            }
+        }
+        public bool HasPermission(string Node)
+        {
+            List<string> Nodes = Node.Split('.').ToList();
+
+            using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
+                while (true)
+                {
+                    using (SQLiteCommand cmd = new SQLiteCommand($"SELECT Node FROM tblUserPermissions WHERE UID = {UID} AND Node = \"{Core.Permissions.PermissionsManager.CombineNodes(Nodes)}\" AND Allow = 1;", conn))
+                    {
+
+                        if (cmd.ExecuteScalar() == null)
+                        {
+                            Nodes.RemoveAt(Nodes.Count - 1);
+
+                            if (Nodes.Count <= 0)
+                            {
+                                conn.Close();
+                                return false;
+                            }
+
+                            continue;
+                        }
+                        else
+                        {
+                            conn.Close();
+                            return true;
+                        }
+                    }
+                }
+        }
+        public bool HasPermissionEntry(string Node)
+        {
+            using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
+            using (SQLiteCommand cmd = new SQLiteCommand($"SELECT Node FROM tblUserPermissions WHERE UID = {UID} AND Node = \"{Node}\";", conn))
+            {
+
+                if (cmd.ExecuteScalar() == null)
+                {
+                    conn.Close();
+                    return false;
+                }
+                else
+                {
+                    conn.Close();
+                    return true;
+                }
+            }
+        }
+        public bool UpdatePermission(string Node, bool Allow)
+        {
+            if (!HasPermissionEntry(Node))
+                return false;
+
+            using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
+            using (SQLiteTransaction transaction = conn.BeginTransaction())
+            using (SQLiteCommand cmd = new SQLiteCommand($"UPDATE tblUserPermissions SET \"Allow\" = {Convert.ToInt32(Allow)} WHERE UID = {UID} AND Node = \"{Node}\";", conn, transaction))
+            {
+                try
+                {
+                    int Changes = cmd.ExecuteNonQuery();
+                    transaction.Commit();
+                    conn.Close();
+
+                    if (Changes == 0)
+                        return false;
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    conn.Close();
+                    throw ex;
+                }
+            }
+        }
         // Firebase UID (Planned for website intergration in the future)
+        #endregion
     }
 }
