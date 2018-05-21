@@ -103,12 +103,16 @@ namespace VTRPG.Core.Authentication
                     using (SQLiteCommand cmd = new SQLiteCommand(Authentication.Save_Create_tblAuth, conn, transaction))
                         cmd.ExecuteNonQuery();
 
+                    // Init UserDeleted Trigger
+                    using (SQLiteCommand cmd = new SQLiteCommand(Authentication.Save_Create_trgAuth_UserDeleted, conn, transaction))
+                        cmd.ExecuteNonQuery();
+
                     transaction.Commit();// Commit
                 }
-                catch
+                catch(Exception ex)
                 {
                     transaction.Rollback();// Rollback
-                    // Failed
+                    throw ex;
                 }
             }
 

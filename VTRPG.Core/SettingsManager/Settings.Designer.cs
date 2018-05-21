@@ -61,6 +61,15 @@ namespace VTRPG.Core.SettingsManager {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to CREATE INDEX `indSettings` ON `tblSettings` ( `Key` ).
+        /// </summary>
+        internal static string Save_Create_indSettings {
+            get {
+                return ResourceManager.GetString("Save_Create_indSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to CREATE TABLE &quot;tblSettings&quot; ( `Key` TEXT NOT NULL UNIQUE, `Value` TEXT NOT NULL, PRIMARY KEY(`Key`) ).
         /// </summary>
         internal static string Save_Create_tblSettings {

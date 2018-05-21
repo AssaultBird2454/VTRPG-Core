@@ -117,23 +117,31 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Save_Create_tblAuth" xml:space="preserve">
-    <value>CREATE TABLE "tblAuth" ( `UID` INTEGER NOT NULL UNIQUE, `Username` TEXT NOT NULL UNIQUE, `Salt` TEXT NOT NULL, `Hash` TEXT NOT NULL, `Security_Attempts` INTEGER NOT NULL DEFAULT 0, `Security_LastAttempt` TEXT NOT NULL, `Security_Disabled` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`UID`), FOREIGN KEY(`UID`) REFERENCES `tblUsers`(`UID`) )</value>
+  <data name="Save_Create_tblGroupMembers" xml:space="preserve">
+    <value>CREATE TABLE `tblGroupMembers` ( `ID` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `GID` INTEGER NOT NULL, `UID` INTEGER NOT NULL, FOREIGN KEY(`UID`) REFERENCES `tblUsers`(`UID`), FOREIGN KEY(`GID`) REFERENCES `tblGroups`(`GID`) )</value>
   </data>
-  <data name="Save_Create_tblUsers" xml:space="preserve">
-    <value>CREATE TABLE "tblUsers" ( `UID` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `Name` TEXT NOT NULL, `Character_Name` TEXT NOT NULL, `UserColor` TEXT NOT NULL DEFAULT '#FFFF0000', `isGM` INTEGER NOT NULL DEFAULT 0 )</value>
+  <data name="Save_Create_tblGroupPermissions" xml:space="preserve">
+    <value>CREATE TABLE "tblGroupPermissions" ( `ID` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `GID` INTEGER NOT NULL, `Node` TEXT NOT NULL, `Allow` INTEGER NOT NULL DEFAULT 1, FOREIGN KEY(`GID`) REFERENCES `tblGroups`(`GID`) )</value>
   </data>
-  <data name="Save_Create_trgAuth_UserDeleted" xml:space="preserve">
-    <value>CREATE TRIGGER trgAuth_UserDeleted BEFORE DELETE 
+  <data name="Save_Create_tblGroups" xml:space="preserve">
+    <value>CREATE TABLE `tblGroups` ( `GID` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `Name` TEXT NOT NULL UNIQUE, `Description` TEXT )</value>
+  </data>
+  <data name="Save_Create_tblUserPermissions" xml:space="preserve">
+    <value>CREATE TABLE "tblUserPermissions" ( `ID` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `UID` INTEGER NOT NULL, `Node` TEXT NOT NULL, `Allow` INTEGER NOT NULL DEFAULT 1, FOREIGN KEY(`UID`) REFERENCES `tblUsers`(`UID`) )</value>
+  </data>
+  <data name="Save_Create_trgPermissions_GroupDeleted" xml:space="preserve">
+    <value>CREATE TRIGGER trgPermissions_GroupDeleted BEFORE DELETE ON tblGroups 
+BEGIN
+	DELETE FROM tblGroupMembers WHERE GID = OLD.GID;
+	DELETE FROM tblGroupPermissions WHERE GID = OLD.GID;
+END</value>
+  </data>
+  <data name="Save_Create_trgPermissions_UserDeleted" xml:space="preserve">
+    <value>CREATE TRIGGER trgPermissions_UserDeleted BEFORE DELETE 
 ON tblUsers
 BEGIN
- DELETE FROM tblAuth WHERE UID = OLD.UID;
+ DELETE FROM tblGroupMembers WHERE UID = OLD.UID;
+ DELETE FROM tblUserPermissions WHERE UID = OLD.UID;
 END;</value>
-  </data>
-  <data name="Setting_Default_AttemptCount" xml:space="preserve">
-    <value>5</value>
-  </data>
-  <data name="Setting_Default_LockoutTime" xml:space="preserve">
-    <value>30</value>
   </data>
 </root>

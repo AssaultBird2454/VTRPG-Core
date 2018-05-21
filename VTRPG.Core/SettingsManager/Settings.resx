@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Save_Create_indSettings" xml:space="preserve">
+    <value>CREATE INDEX `indSettings` ON `tblSettings` ( `Key` )</value>
+  </data>
   <data name="Save_Create_tblSettings" xml:space="preserve">
     <value>CREATE TABLE "tblSettings" ( `Key` TEXT NOT NULL UNIQUE, `Value` TEXT NOT NULL, PRIMARY KEY(`Key`) )</value>
   </data>

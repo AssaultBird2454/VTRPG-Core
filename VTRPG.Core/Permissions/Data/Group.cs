@@ -1,31 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
+using System.Data.SQLite;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Data.SQLite;
 
-namespace VTRPG.Core.Authentication.Data
+namespace VTRPG.Core.Permissions.Data
 {
-    public class User
+    public class Group
     {
         private SaveManager.SaveManager _Manager;
 
-        internal User(SaveManager.SaveManager Manager, int ID)
+        internal Group(SaveManager.SaveManager Manager, int ID)
         {
-            UID = ID;
             _Manager = Manager;
+            GID = ID;
         }
 
-        #region Data
-        public int UID { get; private set; }
+        public int GID { get; private set; }
         public string Name
         {
             get
             {
                 using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
-                using (SQLiteCommand cmd = new SQLiteCommand($"SELECT Name FROM tblUsers WHERE UID = {UID};", conn))
+                using (SQLiteCommand cmd = new SQLiteCommand($"SELECT Name FROM tblGroups WHERE GID = {GID};", conn))
                 {
                     string name = cmd.ExecuteScalar().ToString();
                     conn.Close();
@@ -35,108 +33,145 @@ namespace VTRPG.Core.Authentication.Data
             set
             {
                 using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
-                using (SQLiteCommand cmd = new SQLiteCommand($"UPDATE tblUsers SET Name = \"{value}\" WHERE UID = {UID};", conn))
+                using (SQLiteCommand cmd = new SQLiteCommand($"UPDATE tblGroups SET Name = \"{value}\" WHERE GID = {GID};", conn))
                 {
                     cmd.ExecuteNonQuery();
                     conn.Close();
                 }
             }
         }
-        public string Character_Name
-        {
-            get
-            {
-                using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
-                using (SQLiteCommand cmd = new SQLiteCommand($"SELECT Character_Name FROM tblUsers WHERE UID = {UID};", conn))
-                {
-                    string name = cmd.ExecuteScalar().ToString();
-                    conn.Close();
-                    return name;
-                }
-            }
-            set
-            {
-                using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
-                using (SQLiteCommand cmd = new SQLiteCommand($"UPDATE tblUsers SET Character_Name = \"{value}\" WHERE UID = {UID};", conn))
-                {
-                    cmd.ExecuteNonQuery();
-                    conn.Close();
-                }
-            }
-        }
-        public Color UserColor
-        {
-            get
-            {
-                using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
-                using (SQLiteCommand cmd = new SQLiteCommand($"SELECT UserColor FROM tblUsers WHERE UID = {UID};", conn))
-                {
-                    Color color = (Color)new ColorConverter().ConvertFromString(cmd.ExecuteScalar().ToString());
-                    conn.Close();
-                    return color;
-                }
-            }
-            set
-            {
-                using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
-                using (SQLiteCommand cmd = new SQLiteCommand($"UPDATE tblUsers SET UserColor = \"{new ColorConverter().ConvertToString(value)}\" WHERE UID = {UID};", conn))
-                {
-                    cmd.ExecuteNonQuery();
-                    conn.Close();
-                }
-            }
-        }
-        public bool isGM
-        {
-            get
-            {
-                using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
-                using (SQLiteCommand cmd = new SQLiteCommand($"SELECT isGM FROM tblUsers WHERE UID = {UID};", conn))
-                {
-                    bool gm = (bool)cmd.ExecuteScalar();
-                    conn.Close();
-                    return gm;
-                }
-            }
-            set
-            {
-                using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
-                using (SQLiteCommand cmd = new SQLiteCommand($"UPDATE isGM SET UserColor = \"{value}\" WHERE UID = {UID};", conn))
-                {
-                    cmd.ExecuteNonQuery();
-                    conn.Close();
-                }
-            }
-        }
-        #endregion
 
-        #region Permissions
+        public string Description
+        {
+            get
+            {
+                using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
+                using (SQLiteCommand cmd = new SQLiteCommand($"SELECT Description FROM tblGroups WHERE GID = {GID};", conn))
+                {
+                    string name = cmd.ExecuteScalar().ToString();
+                    conn.Close();
+                    return name;
+                }
+            }
+            set
+            {
+                using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
+                using (SQLiteCommand cmd = new SQLiteCommand($"UPDATE tblGroups SET Description = \"{value}\" WHERE GID = {GID};", conn))
+                {
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
+            }
+        }
+
+        public IEnumerable<Authentication.Data.User> Members
+        {
+            get
+            {
+                using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
+                using (SQLiteCommand cmd = new SQLiteCommand($"SELECT UID FROM tblGroupMembers WHERE GID = {GID};", conn))
+                {
+                    List<Authentication.Data.User> Users = new List<Authentication.Data.User>();
+
+                    using (SQLiteDataReader reader = cmd.ExecuteReader())
+                        while (reader.Read())
+                        {
+                            Users.Add(new Authentication.Data.User(_Manager, reader.GetInt32(0)));
+                        }
+
+                    conn.Close();
+                    return Users;
+                }
+            }
+        }
+
+        public bool AddMember(int UID)
+        {
+            if (!_Manager.AuthManager.HasUser(UID))
+                throw new Authentication.Data.UnknownUserException();
+
+            if (HasMamber(UID))
+                throw new UserAlreadyMemberException();
+
+            using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
+            using (SQLiteTransaction transaction = conn.BeginTransaction())
+            {
+                try
+                {
+                    using (SQLiteCommand cmd = new SQLiteCommand($"INSERT INTO tblGroupMembers (\"GID\", \"UID\") VALUES ({GID}, {UID})", conn, transaction))
+                        cmd.ExecuteNonQuery();
+                    transaction.Commit();
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw ex;
+                }
+            }
+        }
+        public bool RemoveMember(int UID)
+        {
+            if (!HasMamber(UID))
+                throw new UserNotMemberException();
+
+            using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
+            using (SQLiteTransaction transaction = conn.BeginTransaction())
+            {
+                try
+                {
+                    using (SQLiteCommand cmd = new SQLiteCommand($"DELETE FROM tblGroupMembers WHERE \"GID\" = {GID} AND  \"UID\" = {UID}", conn, transaction))
+                        cmd.ExecuteNonQuery();
+                    transaction.Commit();
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw ex;
+                }
+            }
+        }
+        public bool HasMamber(int UID)
+        {
+            if (!_Manager.AuthManager.HasUser(UID))
+                throw new Authentication.Data.UnknownUserException();
+
+            using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
+            {
+                try
+                {
+                    int Count = 0;
+                    using (SQLiteCommand cmd = new SQLiteCommand($"SELECT COUNT(UID) as 'Count' FROM tblGroupMembers WHERE \"GID\" = {GID} AND  \"UID\" = {UID}", conn))
+                        Count = Convert.ToInt32(cmd.ExecuteScalar());
+
+                    if (Count == 0)
+                        return false;
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+        }
+
         public IReadOnlyList<KeyValuePair<string, bool>> Permissions
         {
             get
             {
                 using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
+                using (SQLiteCommand cmd = new SQLiteCommand($"SELECT Node, Allow FROM tblGroupPermissions WHERE GID = {GID};", conn))
                 {
                     List<KeyValuePair<string, bool>> Perms = new List<KeyValuePair<string, bool>>();
-                    using (SQLiteCommand cmd = new SQLiteCommand($"SELECT Node, Allow FROM tblUserPermissions WHERE UID = {UID};", conn))
-                    {
-                        using (SQLiteDataReader reader = cmd.ExecuteReader())
-                            while (reader.Read())
-                            {
-                                Perms.Add(new KeyValuePair<string, bool>(reader.GetString(0), reader.GetBoolean(1)));
-                            }
-                    }
 
-                    foreach (VTRPG.Core.Permissions.Data.Group group in _Manager.PermissionsManager.Groups())
-                        if (group.HasMamber(UID))
-                            using (SQLiteCommand cmd = new SQLiteCommand($"SELECT Node, Allow FROM tblGroupPermissions WHERE GID = {group.GID};", conn))
-                            {
-                                using (SQLiteDataReader reader = cmd.ExecuteReader())
-                                    while (reader.Read())
-                                    {
-                                        Perms.Add(new KeyValuePair<string, bool>(reader.GetString(0), reader.GetBoolean(1)));
-                                    }
-                            }
+                    using (SQLiteDataReader reader = cmd.ExecuteReader())
+                        while (reader.Read())
+                        {
+                            Perms.Add(new KeyValuePair<string, bool>(reader.GetString(0), reader.GetBoolean(1)));
+                        }
 
                     conn.Close();
                     return Perms;
@@ -151,7 +186,7 @@ namespace VTRPG.Core.Authentication.Data
 
             using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
             using (SQLiteTransaction transaction = conn.BeginTransaction())
-            using (SQLiteCommand cmd = new SQLiteCommand($"INSERT INTO tblUserPermissions (\"UID\", \"Node\", \"Allow\") VALUES ({UID}, \"{Node}\", {Convert.ToInt32(Allow)});", conn, transaction))
+            using (SQLiteCommand cmd = new SQLiteCommand($"INSERT INTO tblGroupPermissions (\"GID\", \"Node\", \"Allow\") VALUES ({GID}, \"{Node}\", {Convert.ToInt32(Allow)});", conn, transaction))
             {
                 try
                 {
@@ -178,7 +213,7 @@ namespace VTRPG.Core.Authentication.Data
 
             using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
             using (SQLiteTransaction transaction = conn.BeginTransaction())
-            using (SQLiteCommand cmd = new SQLiteCommand($"DELETE FROM tblUserPermissions WHERE UID = {UID} AND Node = \"{Node}\";", conn, transaction))
+            using (SQLiteCommand cmd = new SQLiteCommand($"DELETE FROM tblGroupPermissions WHERE GID = {GID} AND Node = \"{Node}\";", conn, transaction))
             {
                 try
                 {
@@ -205,7 +240,7 @@ namespace VTRPG.Core.Authentication.Data
             using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
                 while (true)
                 {
-                    using (SQLiteCommand cmd = new SQLiteCommand($"SELECT Node FROM tblUserPermissions WHERE UID = {UID} AND Node = \"{Core.Permissions.PermissionsManager.CombineNodes(Nodes)}\" AND Allow = 1;", conn))
+                    using (SQLiteCommand cmd = new SQLiteCommand($"SELECT Node FROM tblGroupPermissions WHERE GID = {GID} AND Node = \"{PermissionsManager.CombineNodes(Nodes)}\" AND Allow = 1;", conn))
                     {
 
                         if (cmd.ExecuteScalar() == null)
@@ -231,7 +266,7 @@ namespace VTRPG.Core.Authentication.Data
         public bool HasPermissionEntry(string Node)
         {
             using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
-            using (SQLiteCommand cmd = new SQLiteCommand($"SELECT Node FROM tblUserPermissions WHERE UID = {UID} AND Node = \"{Node}\";", conn))
+            using (SQLiteCommand cmd = new SQLiteCommand($"SELECT Node FROM tblGroupPermissions WHERE GID = {GID} AND Node = \"{Node}\";", conn))
             {
 
                 if (cmd.ExecuteScalar() == null)
@@ -253,7 +288,7 @@ namespace VTRPG.Core.Authentication.Data
 
             using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
             using (SQLiteTransaction transaction = conn.BeginTransaction())
-            using (SQLiteCommand cmd = new SQLiteCommand($"UPDATE tblUserPermissions SET \"Allow\" = {Convert.ToInt32(Allow)} WHERE UID = {UID} AND Node = \"{Node}\";", conn, transaction))
+            using (SQLiteCommand cmd = new SQLiteCommand($"UPDATE tblGroupPermissions SET \"Allow\" = {Convert.ToInt32(Allow)} WHERE GID = {GID} AND Node = \"{Node}\";", conn, transaction))
             {
                 try
                 {
@@ -273,7 +308,5 @@ namespace VTRPG.Core.Authentication.Data
                 }
             }
         }
-        // Firebase UID (Planned for website intergration in the future)
-        #endregion
     }
 }

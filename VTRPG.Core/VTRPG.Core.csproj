@@ -119,6 +119,14 @@
     <Compile Include="Authentication\Data\Data.cs" />
     <Compile Include="Authentication\Data\LoginEntry.cs" />
     <Compile Include="Authentication\Data\User.cs" />
+    <Compile Include="Permissions\Data\Data.cs" />
+    <Compile Include="Permissions\Data\Group.cs" />
+    <Compile Include="Permissions\Permissions.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Permissions.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Permissions\PermissionsManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SaveManager\SaveManager.cs" />
     <Compile Include="SettingsManager\Settings.Designer.cs">
@@ -133,7 +141,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Permissions\" />
     <Folder Include="PluginAPI\" />
     <Folder Include="ResourceManager\" />
     <Folder Include="ScriptingInterface\" />
@@ -144,6 +151,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Authentication.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="Permissions\Permissions.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Permissions.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="SettingsManager\Settings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -152,7 +163,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
-xcopy /s /y "G:\Projects\VTRPG\VTRPG-Core\packages\NLua.1.3.2.1\lib\native\*.*" "$(TargetDir)"</PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\System.Data.SQLite.Core.1.0.108.0\build\net46\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.108.0\build\net46\System.Data.SQLite.Core.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

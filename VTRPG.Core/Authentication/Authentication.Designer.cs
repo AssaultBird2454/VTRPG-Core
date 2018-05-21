@@ -79,6 +79,19 @@ namespace VTRPG.Core.Authentication {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to CREATE TRIGGER trgAuth_UserDeleted BEFORE DELETE 
+        ///ON tblUsers
+        ///BEGIN
+        /// DELETE FROM tblAuth WHERE UID = OLD.UID;
+        ///END;.
+        /// </summary>
+        internal static string Save_Create_trgAuth_UserDeleted {
+            get {
+                return ResourceManager.GetString("Save_Create_trgAuth_UserDeleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 5.
         /// </summary>
         internal static string Setting_Default_AttemptCount {
