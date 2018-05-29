@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VTRPG.SaveEditor"
         mc:Ignorable="d"
-        Title="VTRPG [Version] - Client" Height="578" Width="880">
+        Title="VTRPG [Version] - Client" Height="578" Width="821">
     <Grid>
         <Menu x:Name="mbaMain" VerticalAlignment="Top">
             <MenuItem x:Name="mitMenu" Header="Menu">
@@ -27,10 +27,49 @@
                 <Grid Background="#FFE5E5E5">
                     <TabControl>
                         <TabItem x:Name="tabBasicSettings" Header="Basic Settings">
-                            <Grid Background="#FFE5E5E5"/>
+                            <Grid Background="#FFE5E5E5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Label Content="Campaign Information" VerticalAlignment="Top" FontWeight="Bold" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                                <Label Content="Campaign Settings" VerticalAlignment="Top" FontWeight="Bold" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Column="1"/>
+                                <Label Content="System Settings" VerticalAlignment="Top" FontWeight="Bold" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Column="2"/>
+                                <Label Content="Campaign Name" HorizontalAlignment="Left" Margin="0,31,0,0" VerticalAlignment="Top"/>
+                                <TextBox x:Name="txtBasicSettings_CampaignName" Height="26" Margin="99,31,10,0" TextWrapping="Wrap" VerticalAlignment="Top" VerticalContentAlignment="Center"/>
+                                <Label Content="Campaign GM" HorizontalAlignment="Left" Margin="0,62,0,0" VerticalAlignment="Top"/>
+                                <TextBox x:Name="txtBasicSettings_CampaignName_Copy" Height="26" Margin="99,62,10,0" TextWrapping="Wrap" VerticalAlignment="Top" VerticalContentAlignment="Center"/>
+                            </Grid>
                         </TabItem>
                         <TabItem x:Name="tabUsers" Header="Users">
-                            <Grid Background="#FFE5E5E5"/>
+                            <Grid Background="#FFE5E5E5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="115"/>
+                                </Grid.ColumnDefinitions>
+                                <ListView x:Name="livUsers" HorizontalAlignment="Left" Width="574">
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn/>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                                <GroupBox Grid.Column="1" Header="User Management" Height="97" VerticalAlignment="Top">
+                                    <Grid Margin="0">
+                                        <Button Content="Add User" VerticalAlignment="Top"/>
+                                        <Button Content="Edit User" VerticalAlignment="Top" Margin="0,25,0,0"/>
+                                        <Button Content="Remove User" VerticalAlignment="Top" Margin="0,50,0,0"/>
+                                    </Grid>
+                                </GroupBox>
+                                <GroupBox Grid.Column="1" Header="User Controls" Height="144" VerticalAlignment="Top" Margin="0,102,0,0">
+                                    <Grid Margin="0">
+                                        <Button Content="Enable User" VerticalAlignment="Top"/>
+                                        <Button Content="Disable User" VerticalAlignment="Top" Margin="0,25,0,0"/>
+                                        <Button Content="Unlock User" VerticalAlignment="Top" Margin="0,50,0,0"/>
+                                    </Grid>
+                                </GroupBox>
+                            </Grid>
                         </TabItem>
                         <TabItem x:Name="tabGroups" Header="Groups">
                             <Grid Background="#FFE5E5E5"/>
