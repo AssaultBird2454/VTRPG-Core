@@ -8,11 +8,11 @@ using System.Data.SQLite;
 
 namespace VTRPG.Core.Authentication.Data
 {
-    public class User
+    public class User_DB : IUser
     {
         private SaveManager.SaveManager _Manager;
 
-        internal User(SaveManager.SaveManager Manager, int ID)
+        internal User_DB(SaveManager.SaveManager Manager, int ID)
         {
             UID = ID;
             _Manager = Manager;
@@ -273,6 +273,68 @@ namespace VTRPG.Core.Authentication.Data
                 }
             }
         }
+        // Firebase UID (Planned for website intergration in the future)
+        #endregion
+    }
+    public class User_OBJ : IUser
+    {
+        internal User_OBJ(SaveManager.SaveManager Manager, int ID)
+        {
+            UID = ID;
+        }
+
+        #region Data
+        public int UID { get; set; }
+        public string Name { get; set; }
+        public string Character_Name { get; set; }
+        public Color UserColor { get; set; }
+        public bool isGM { get; set; }
+        #endregion
+
+        #region Permissions
+        public IReadOnlyList<KeyValuePair<string, bool>> Permissions { get; }
+
+        public bool AddPermission(string Node, bool Allow = true)
+        {
+            throw new NotImplementedException();
+        }
+        public bool RemovePermission(string Node)
+        {
+            throw new NotImplementedException();
+        }
+        public bool HasPermission(string Node)
+        {
+            throw new NotImplementedException();
+        }
+        public bool HasPermissionEntry(string Node)
+        {
+            throw new NotImplementedException();
+        }
+        public bool UpdatePermission(string Node, bool Allow)
+        {
+            throw new NotImplementedException();
+        }
+        // Firebase UID (Planned for website intergration in the future)
+        #endregion
+    }
+    public interface IUser
+    {
+        #region Data
+        int UID { get; }
+        string Name { get; set; }
+        string Character_Name { get; set; }
+        Color UserColor { get; set; }
+        bool isGM { get; set; }
+        #endregion
+
+        #region Permissions
+        IReadOnlyList<KeyValuePair<string, bool>> Permissions { get; }
+
+        bool AddPermission(string Node, bool Allow = true);
+        bool RemovePermission(string Node);
+        bool HasPermission(string Node);
+        bool HasPermissionEntry(string Node);
+        bool UpdatePermission(string Node, bool Allow);
         // Firebase UID (Planned for website intergration in the future)
         #endregion
     }

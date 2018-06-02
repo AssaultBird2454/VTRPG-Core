@@ -17,9 +17,6 @@ namespace VTRPG.Core.SaveManager
         public SaveManager(string SaveFile = "")
         {
             _SaveFile = SaveFile;
-            SettingsManager = new SettingsManager.SettingsManager(this);
-            AuthManager = new Authentication.AuthenticationManager(this);
-            PermissionsManager = new Permissions.PermissionsManager(this);
         }
 
         public event SaveFileChangedEventHandeler SaveFileChangedEvent;
@@ -44,9 +41,19 @@ namespace VTRPG.Core.SaveManager
 
         public void InitSave()
         {
+            SettingsManager = new SettingsManager.SettingsManager(this);
+            AuthManager = new Authentication.AuthenticationManager(this);
+            PermissionsManager = new Permissions.PermissionsManager(this);
+
             SettingsManager.InitSaveFile();
             AuthManager.InitSaveFile();
             PermissionsManager.InitSaveFile();
+        }
+        public void Load()
+        {
+            SettingsManager = new SettingsManager.SettingsManager(this);
+            AuthManager = new Authentication.AuthenticationManager(this);
+            PermissionsManager = new Permissions.PermissionsManager(this);
         }
 
         private SettingsManager.SettingsManager _SettingsManager;

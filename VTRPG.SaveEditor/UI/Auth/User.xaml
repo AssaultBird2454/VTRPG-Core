@@ -1,0 +1,57 @@
+﻿<Window x:Class="VTRPG.SaveEditor.UI.Auth.User"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:VTRPG.SaveEditor.UI.Auth"
+        xmlns:wpftk="crl-namespace:Xceed.Wpf.Toolkit"
+        xmlns:wpftk1="http://schemas.xceed.com/wpf/xaml/toolkit"
+        mc:Ignorable="d"
+        Title="User" Height="450" Width="850">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="300"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <TextBox x:Name="txtUserName" HorizontalAlignment="Left" Height="26" Margin="101,39,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="194" VerticalContentAlignment="Center" Text="Tasman L"/>
+        <Label x:Name="lblUserName" Content="User Name" HorizontalAlignment="Left" Margin="0,39,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="txtCharName" HorizontalAlignment="Left" Height="26" Margin="101,70,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="194" VerticalContentAlignment="Center" Text="Gill Bates"/>
+        <Label x:Name="lblCharName" Content="Character Name" HorizontalAlignment="Left" Margin="0,70,0,0" VerticalAlignment="Top"/>
+        <wpftk1:ColorPicker x:Name="cpiUserColor" HorizontalAlignment="Left" Height="26" Margin="101,101,0,0" VerticalAlignment="Top" Width="194" VerticalContentAlignment="Center" SelectedColor="Red"/>
+        <Label x:Name="lblUserColor" Content="User Color" HorizontalAlignment="Left" Margin="0,101,0,0" VerticalAlignment="Top"/>
+        <CheckBox x:Name="chbIsGM" Content="User Is GM?" HorizontalAlignment="Left" Margin="0,132,0,0" VerticalAlignment="Top" IsChecked="True"/>
+        <TreeView x:Name="trvUserPermissions" Margin="0,34,0,0" Grid.Column="1">
+            <TreeViewItem Header="Core" IsExpanded="True">
+                <TreeViewItem Header="Accounts" HorizontalAlignment="Left" IsExpanded="True">
+                    <TreeViewItem Header="View" HorizontalAlignment="Left"/>
+                    <TreeViewItem Header="Edit" HorizontalAlignment="Left"/>
+                </TreeViewItem>
+            </TreeViewItem>
+        </TreeView>
+        <Button x:Name="btnSave" Content="Save / Create " HorizontalAlignment="Left" Margin="10,0,0,10" VerticalAlignment="Bottom" Width="83" Grid.Row="1" IsDefault="True"/>
+        <Button x:Name="btnClose" Content="Cancel" HorizontalAlignment="Left" Margin="98,0,0,10" VerticalAlignment="Bottom" Width="83" Grid.Row="1" IsCancel="True"/>
+        <Label x:Name="lblUserPermissions" Content="User Permissions" Grid.Column="1" VerticalAlignment="Top" FontWeight="Bold" FontSize="18" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+        <Label x:Name="lblGroups" Content="Group Memberships" Grid.Column="1" VerticalAlignment="Top" FontWeight="Bold" FontSize="18" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Row="1"/>
+        <ListView x:Name="livGroups" Margin="0,34,0,0" Grid.Column="1" Grid.Row="1">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <Label x:Name="lblUserDetails" Content="User Details" VerticalAlignment="Top" FontWeight="Bold" FontSize="18" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+        <TextBox x:Name="txtLoginName" HorizontalAlignment="Left" Height="26" Margin="79,39,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="211" VerticalContentAlignment="Center" Grid.Row="1" Text="AssaultBird2454"/>
+        <Label x:Name="lblLoginName" Content="Login Name" HorizontalAlignment="Left" Margin="0,39,0,0" VerticalAlignment="Top" Grid.Row="1"/>
+        <Label x:Name="lblAccountDetails" Content="Account Details" VerticalAlignment="Top" FontWeight="Bold" FontSize="18" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Row="1"/>
+        <CheckBox x:Name="chbEnabled" Content="Account Enabled" HorizontalAlignment="Left" Margin="0,70,0,0" Grid.Row="1" VerticalAlignment="Top" IsChecked="True" ToolTip="Defines if the account is usable (If this is not enabled then the account will return a error and reject authentication)"/>
+        <CheckBox x:Name="chbLocked" Content="Account Locked" HorizontalAlignment="Left" Margin="0,90,0,0" Grid.Row="1" VerticalAlignment="Top" IsEnabled="False" IsChecked="True" ToolTip="Defines if the account is locked from invalid password attempts (If this is enabled then the account will return a error and reject authentication)"/>
+        <Button x:Name="btnUnlock" Content="Unlock Account" HorizontalAlignment="Left" Margin="17,110,0,0" Grid.Row="1" VerticalAlignment="Top" Width="92"/>
+        <Label x:Name="lblLockoutDuration" Content="Locked Until:&#xD;&#xA;02/06/2018 9:06AM" HorizontalAlignment="Left" Margin="109,90,0,0" Grid.Row="1" VerticalAlignment="Top" Height="40" Width="140" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Foreground="#FF515151"/>
+        <Button x:Name="btnChangePassword" Content="Change Password" HorizontalAlignment="Left" Margin="10,135,0,0" Grid.Row="1" VerticalAlignment="Top" Width="99"/>
+
+    </Grid>
+</Window>
