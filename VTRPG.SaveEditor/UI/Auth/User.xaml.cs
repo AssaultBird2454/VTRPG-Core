@@ -23,5 +23,24 @@ namespace VTRPG.SaveEditor.UI.Auth
         {
             InitializeComponent();
         }
+
+        public void Load()
+        {
+
+        }
+
+        public void Save()
+        {
+
+        }
+
+        public void LoadUserPermissions()
+        {
+
+        }
+        public void LoadUserGroups()
+        {
+
+        }
     }
 }

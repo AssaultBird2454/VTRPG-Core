@@ -7,7 +7,7 @@
         xmlns:wpftk="crl-namespace:Xceed.Wpf.Toolkit"
         xmlns:wpftk1="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="User" Height="450" Width="850">
+        Title="User" Height="626" Width="850">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>
@@ -17,13 +17,13 @@
             <ColumnDefinition Width="300"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <TextBox x:Name="txtUserName" HorizontalAlignment="Left" Height="26" Margin="101,39,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="194" VerticalContentAlignment="Center" Text="Tasman L"/>
-        <Label x:Name="lblUserName" Content="User Name" HorizontalAlignment="Left" Margin="0,39,0,0" VerticalAlignment="Top"/>
-        <TextBox x:Name="txtCharName" HorizontalAlignment="Left" Height="26" Margin="101,70,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="194" VerticalContentAlignment="Center" Text="Gill Bates"/>
-        <Label x:Name="lblCharName" Content="Character Name" HorizontalAlignment="Left" Margin="0,70,0,0" VerticalAlignment="Top"/>
-        <wpftk1:ColorPicker x:Name="cpiUserColor" HorizontalAlignment="Left" Height="26" Margin="101,101,0,0" VerticalAlignment="Top" Width="194" VerticalContentAlignment="Center" SelectedColor="Red"/>
-        <Label x:Name="lblUserColor" Content="User Color" HorizontalAlignment="Left" Margin="0,101,0,0" VerticalAlignment="Top"/>
-        <CheckBox x:Name="chbIsGM" Content="User Is GM?" HorizontalAlignment="Left" Margin="0,132,0,0" VerticalAlignment="Top" IsChecked="True"/>
+        <TextBox x:Name="txtUserName" HorizontalAlignment="Left" Height="26" Margin="101,70,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="194" VerticalContentAlignment="Center" Text="Tasman L"/>
+        <Label x:Name="lblUserName" Content="User Name" HorizontalAlignment="Left" Margin="0,70,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="txtCharName" HorizontalAlignment="Left" Height="26" Margin="101,101,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="194" VerticalContentAlignment="Center" Text="Gill Bates"/>
+        <Label x:Name="lblCharName" Content="Character Name" HorizontalAlignment="Left" Margin="0,101,0,0" VerticalAlignment="Top"/>
+        <wpftk1:ColorPicker x:Name="cpiUserColor" HorizontalAlignment="Left" Height="26" Margin="101,132,0,0" VerticalAlignment="Top" Width="194" VerticalContentAlignment="Center" SelectedColor="Red"/>
+        <Label x:Name="lblUserColor" Content="User Color" HorizontalAlignment="Left" Margin="0,132,0,0" VerticalAlignment="Top"/>
+        <CheckBox x:Name="chbIsGM" Content="User Is GM?" HorizontalAlignment="Left" Margin="0,163,0,0" VerticalAlignment="Top" IsChecked="True"/>
         <TreeView x:Name="trvUserPermissions" Margin="0,34,0,0" Grid.Column="1">
             <TreeViewItem Header="Core" IsExpanded="True">
                 <TreeViewItem Header="Accounts" HorizontalAlignment="Left" IsExpanded="True">
@@ -33,7 +33,7 @@
             </TreeViewItem>
         </TreeView>
         <Button x:Name="btnSave" Content="Save / Create " HorizontalAlignment="Left" Margin="10,0,0,10" VerticalAlignment="Bottom" Width="83" Grid.Row="1" IsDefault="True"/>
-        <Button x:Name="btnClose" Content="Cancel" HorizontalAlignment="Left" Margin="98,0,0,10" VerticalAlignment="Bottom" Width="83" Grid.Row="1" IsCancel="True"/>
+        <Button x:Name="btnClose" Content="Close" HorizontalAlignment="Left" Margin="98,0,0,10" VerticalAlignment="Bottom" Width="83" Grid.Row="1" IsCancel="True"/>
         <Label x:Name="lblUserPermissions" Content="User Permissions" Grid.Column="1" VerticalAlignment="Top" FontWeight="Bold" FontSize="18" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
         <Label x:Name="lblGroups" Content="Group Memberships" Grid.Column="1" VerticalAlignment="Top" FontWeight="Bold" FontSize="18" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Row="1"/>
         <ListView x:Name="livGroups" Margin="0,34,0,0" Grid.Column="1" Grid.Row="1">
@@ -44,14 +44,21 @@
             </ListView.View>
         </ListView>
         <Label x:Name="lblUserDetails" Content="User Details" VerticalAlignment="Top" FontWeight="Bold" FontSize="18" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-        <TextBox x:Name="txtLoginName" HorizontalAlignment="Left" Height="26" Margin="79,39,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="211" VerticalContentAlignment="Center" Grid.Row="1" Text="AssaultBird2454"/>
+        <TextBox x:Name="txtLoginName" Height="26" Margin="79,39,10,0" TextWrapping="Wrap" VerticalAlignment="Top" VerticalContentAlignment="Center" Grid.Row="1" Text="AssaultBird2454"/>
         <Label x:Name="lblLoginName" Content="Login Name" HorizontalAlignment="Left" Margin="0,39,0,0" VerticalAlignment="Top" Grid.Row="1"/>
         <Label x:Name="lblAccountDetails" Content="Account Details" VerticalAlignment="Top" FontWeight="Bold" FontSize="18" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Row="1"/>
-        <CheckBox x:Name="chbEnabled" Content="Account Enabled" HorizontalAlignment="Left" Margin="0,70,0,0" Grid.Row="1" VerticalAlignment="Top" IsChecked="True" ToolTip="Defines if the account is usable (If this is not enabled then the account will return a error and reject authentication)"/>
-        <CheckBox x:Name="chbLocked" Content="Account Locked" HorizontalAlignment="Left" Margin="0,90,0,0" Grid.Row="1" VerticalAlignment="Top" IsEnabled="False" IsChecked="True" ToolTip="Defines if the account is locked from invalid password attempts (If this is enabled then the account will return a error and reject authentication)"/>
-        <Button x:Name="btnUnlock" Content="Unlock Account" HorizontalAlignment="Left" Margin="17,110,0,0" Grid.Row="1" VerticalAlignment="Top" Width="92"/>
-        <Label x:Name="lblLockoutDuration" Content="Locked Until:&#xD;&#xA;02/06/2018 9:06AM" HorizontalAlignment="Left" Margin="109,90,0,0" Grid.Row="1" VerticalAlignment="Top" Height="40" Width="140" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Foreground="#FF515151"/>
-        <Button x:Name="btnChangePassword" Content="Change Password" HorizontalAlignment="Left" Margin="10,135,0,0" Grid.Row="1" VerticalAlignment="Top" Width="99"/>
+        <CheckBox x:Name="chbEnabled" Content="Account Enabled" HorizontalAlignment="Left" Margin="0,167,0,0" Grid.Row="1" VerticalAlignment="Top" IsChecked="True" ToolTip="Defines if the account is usable (If this is not enabled then the account will return a error and reject authentication)"/>
+        <CheckBox x:Name="chbLocked" Content="Account Locked" HorizontalAlignment="Left" Margin="0,187,0,0" Grid.Row="1" VerticalAlignment="Top" IsEnabled="False" IsChecked="True" ToolTip="Defines if the account is locked from invalid password attempts (If this is enabled then the account will return a error and reject authentication)"/>
+        <Button x:Name="btnUnlock" Content="Unlock Account" HorizontalAlignment="Left" Margin="17,207,0,0" Grid.Row="1" VerticalAlignment="Top" Width="92"/>
+        <Label x:Name="lblLockoutDuration" Content="Locked Until:&#xD;&#xA;02/06/2018 9:06AM" HorizontalAlignment="Left" Margin="109,187,0,0" Grid.Row="1" VerticalAlignment="Top" Height="40" Width="140" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Foreground="#FF515151"/>
+        <Button x:Name="btnChangePassword" Content="Change Password" HorizontalAlignment="Left" Margin="10,132,0,0" Grid.Row="1" VerticalAlignment="Top" Width="99"/>
+        <Label x:Name="lblLoginName_Copy" Content="Password" HorizontalAlignment="Left" Margin="0,70,0,0" VerticalAlignment="Top" Grid.Row="1"/>
+        <Label x:Name="lblLoginName_Copy1" Content="Password Again" HorizontalAlignment="Left" Margin="0,101,0,0" VerticalAlignment="Top" Grid.Row="1"/>
+        <Button x:Name="btnReload" Content="Reload" HorizontalAlignment="Left" Margin="186,0,0,10" VerticalAlignment="Bottom" Width="83" Grid.Row="1" IsCancel="True"/>
+        <PasswordBox x:Name="pbxConfirmPassword" Margin="98,101,10,0" Grid.Row="1" VerticalAlignment="Top" Height="26"/>
+        <PasswordBox x:Name="pbxPassword" Margin="98,70,10,0" Grid.Row="1" VerticalAlignment="Top" Height="26"/>
+        <Label Content="User ID" HorizontalAlignment="Left" Margin="0,39,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="txtUID" HorizontalAlignment="Left" Height="26" Margin="54,39,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="68" Text="0" VerticalContentAlignment="Center" IsReadOnly="True"/>
 
     </Grid>
 </Window>
