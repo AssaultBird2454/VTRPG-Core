@@ -39,7 +39,7 @@
                                 <Label Content="Campaign Name" HorizontalAlignment="Left" Margin="0,31,0,0" VerticalAlignment="Top"/>
                                 <TextBox x:Name="txtBasicSettings_CampaignName" Height="26" Margin="99,31,10,0" TextWrapping="Wrap" VerticalAlignment="Top" VerticalContentAlignment="Center"/>
                                 <Label Content="Campaign GM" HorizontalAlignment="Left" Margin="0,62,0,0" VerticalAlignment="Top"/>
-                                <TextBox x:Name="txtBasicSettings_CampaignName_Copy" Height="26" Margin="99,62,10,0" TextWrapping="Wrap" VerticalAlignment="Top" VerticalContentAlignment="Center"/>
+                                <TextBox x:Name="txtBasicSettings_GMName" Height="26" Margin="99,62,10,0" TextWrapping="Wrap" VerticalAlignment="Top" VerticalContentAlignment="Center"/>
                                 <Button x:Name="btnSaveChanges_Basic" Content="Save Changes" HorizontalAlignment="Left" Margin="10,425,0,0" VerticalAlignment="Top" Width="90" Click="btnSaveChanges_Basic_Click"/>
                                 <Button x:Name="btnLoadChanges_Basic" Content="Load Changes" HorizontalAlignment="Left" Margin="105,425,0,0" VerticalAlignment="Top" Width="90" Click="btnLoadChanges_Basic_Click"/>
                                 <Button x:Name="btnSaveChanges_Campaign" Content="Save Changes" HorizontalAlignment="Left" Margin="10,425,0,0" VerticalAlignment="Top" Width="90" Click="btnSaveChanges_Campaign_Click" Grid.Column="1"/>

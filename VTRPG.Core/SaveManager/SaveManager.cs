@@ -48,6 +48,9 @@ namespace VTRPG.Core.SaveManager
             SettingsManager.InitSaveFile();
             AuthManager.InitSaveFile();
             PermissionsManager.InitSaveFile();
+
+            SettingsManager.SetValue(SettingNames.Campaign_Name, "");
+            SettingsManager.SetValue(SettingNames.Campaign_GMName, "");
         }
         public void Load()
         {

@@ -119,6 +119,11 @@ namespace VTRPG.SaveEditor
 
         }
 
+        public void Basic_Load()
+        {
+            txtBasicSettings_CampaignName.Text = SaveManager.SettingsManager.GetValue(SettingNames.Campaign_Name).ToString();
+            txtBasicSettings_GMName.Text = SaveManager.SettingsManager.GetValue(SettingNames.Campaign_GMName).ToString();
+        }
         #endregion
 
         #region Auth
@@ -129,7 +134,7 @@ namespace VTRPG.SaveEditor
 
             if (pass == true)
             {
-                SaveManager.AuthManager.RegisterUser();
+                //SaveManager.AuthManager.RegisterUser();
             }
         }
 

@@ -133,6 +133,11 @@
     <Compile Include="Permissions\PermissionsManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SaveManager\SaveManager.cs" />
+    <Compile Include="SaveManager\SettingNames.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SettingNames.resx</DependentUpon>
+    </Compile>
     <Compile Include="SettingsManager\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -158,6 +163,10 @@
     <EmbeddedResource Include="Permissions\Permissions.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Permissions.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SaveManager\SettingNames.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>SettingNames.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="SettingsManager\Settings.resx">
       <Generator>ResXFileCodeGenerator</Generator>

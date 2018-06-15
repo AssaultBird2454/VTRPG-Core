@@ -276,9 +276,9 @@ namespace VTRPG.Core.Authentication.Data
         // Firebase UID (Planned for website intergration in the future)
         #endregion
     }
-    public class User_OBJ : IUser
+    public class User : IUser
     {
-        internal User_OBJ(SaveManager.SaveManager Manager, int ID)
+        internal User(SaveManager.SaveManager Manager, int ID)
         {
             UID = ID;
         }
