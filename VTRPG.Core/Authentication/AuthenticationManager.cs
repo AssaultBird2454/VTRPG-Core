@@ -335,6 +335,12 @@ namespace VTRPG.Core.Authentication
                 }
             }
         }
+        internal Login GetLoginDB(int ID)
+        {
+            if (HasUser(ID))
+                return new Login(Manager.AuthManager, ID);
+            return null;
+        }
 
         public bool HasUser(int UID)
         {

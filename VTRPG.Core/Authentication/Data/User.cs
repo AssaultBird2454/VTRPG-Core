@@ -4,338 +4,239 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Data.SQLite;
+using VTRPG.Core.SaveManager.Helper;
+using VTRPG.Core.Permissions.Data;
 
 namespace VTRPG.Core.Authentication.Data
 {
-    public class User_DB : IUser
+    public class UserDetails : DataUpdated
     {
-        private SaveManager.SaveManager _Manager;
-
-        internal User_DB(SaveManager.SaveManager Manager, int ID)
+        private int _UID;
+        public int UID
         {
-            UID = ID;
-            _Manager = Manager;
+            get { return _UID; }
+            set
+            {
+                _UID = value;
+                UpdatedEvent?.Invoke();
+            }
         }
 
-        #region Data
-        public int UID { get; private set; }
+        private string _Name;
         public string Name
         {
-            get
-            {
-                using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
-                using (SQLiteCommand cmd = new SQLiteCommand($"SELECT Name FROM tblUsers WHERE UID = {UID};", conn))
-                {
-                    string name = cmd.ExecuteScalar().ToString();
-                    conn.Close();
-                    return name;
-                }
-            }
+            get { return _Name; }
             set
             {
-                using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
-                using (SQLiteCommand cmd = new SQLiteCommand($"UPDATE tblUsers SET Name = \"{value}\" WHERE UID = {UID};", conn))
-                {
-                    cmd.ExecuteNonQuery();
-                    conn.Close();
-                }
+                _Name = value;
+                UpdatedEvent?.Invoke();
             }
         }
+
+        private string _Character_Name;
         public string Character_Name
         {
-            get
-            {
-                using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
-                using (SQLiteCommand cmd = new SQLiteCommand($"SELECT Character_Name FROM tblUsers WHERE UID = {UID};", conn))
-                {
-                    string name = cmd.ExecuteScalar().ToString();
-                    conn.Close();
-                    return name;
-                }
-            }
+            get { return _Character_Name; }
             set
             {
-                using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
-                using (SQLiteCommand cmd = new SQLiteCommand($"UPDATE tblUsers SET Character_Name = \"{value}\" WHERE UID = {UID};", conn))
-                {
-                    cmd.ExecuteNonQuery();
-                    conn.Close();
-                }
+                _Character_Name = value;
+                UpdatedEvent?.Invoke();
             }
         }
+
+        private Color _UserColor;
         public Color UserColor
         {
-            get
-            {
-                using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
-                using (SQLiteCommand cmd = new SQLiteCommand($"SELECT UserColor FROM tblUsers WHERE UID = {UID};", conn))
-                {
-                    Color color = (Color)new ColorConverter().ConvertFromString(cmd.ExecuteScalar().ToString());
-                    conn.Close();
-                    return color;
-                }
-            }
+            get { return _UserColor; }
             set
             {
-                using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
-                using (SQLiteCommand cmd = new SQLiteCommand($"UPDATE tblUsers SET UserColor = \"{new ColorConverter().ConvertToString(value)}\" WHERE UID = {UID};", conn))
-                {
-                    cmd.ExecuteNonQuery();
-                    conn.Close();
-                }
+                _UserColor = value;
+                UpdatedEvent?.Invoke();
             }
         }
+
+        private bool _isGM;
         public bool isGM
         {
-            get
-            {
-                using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
-                using (SQLiteCommand cmd = new SQLiteCommand($"SELECT isGM FROM tblUsers WHERE UID = {UID};", conn))
-                {
-                    bool gm = (bool)cmd.ExecuteScalar();
-                    conn.Close();
-                    return gm;
-                }
-            }
+            get { return _isGM; }
             set
             {
-                using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
-                using (SQLiteCommand cmd = new SQLiteCommand($"UPDATE isGM SET UserColor = \"{value}\" WHERE UID = {UID};", conn))
-                {
-                    cmd.ExecuteNonQuery();
-                    conn.Close();
-                }
+                _isGM = value;
+                UpdatedEvent?.Invoke();
             }
         }
-        #endregion
 
-        #region Permissions
-        public IReadOnlyList<KeyValuePair<string, bool>> Permissions
+        public virtual event UpdatedDataEventHandler UpdatedEvent;
+    }
+
+    public class User : UserDetails
+    {
+        private List<PermissionEntry> _UserPermissions;
+        public IEnumerable<PermissionEntry> UserPermissions { get; }
+
+        public void AddUserPermission(string Node, bool Enabled)
         {
-            get
-            {
-                using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
-                {
-                    List<KeyValuePair<string, bool>> Perms = new List<KeyValuePair<string, bool>>();
-                    using (SQLiteCommand cmd = new SQLiteCommand($"SELECT Node, Allow FROM tblUserPermissions WHERE UID = {UID};", conn))
-                    {
-                        using (SQLiteDataReader reader = cmd.ExecuteReader())
-                            while (reader.Read())
-                            {
-                                Perms.Add(new KeyValuePair<string, bool>(reader.GetString(0), reader.GetBoolean(1)));
-                            }
-                    }
-
-                    foreach (VTRPG.Core.Permissions.Data.Group group in _Manager.PermissionsManager.Groups())
-                        if (group.HasMamber(UID))
-                            using (SQLiteCommand cmd = new SQLiteCommand($"SELECT Node, Allow FROM tblGroupPermissions WHERE GID = {group.GID};", conn))
-                            {
-                                using (SQLiteDataReader reader = cmd.ExecuteReader())
-                                    while (reader.Read())
-                                    {
-                                        Perms.Add(new KeyValuePair<string, bool>(reader.GetString(0), reader.GetBoolean(1)));
-                                    }
-                            }
-
-                    conn.Close();
-                    return Perms;
-                }
-            }
+            _UserPermissions.Add(new PermissionEntry() { Node = Node, Enabled = Enabled });
+            PermissionsUpdatedEvent?.Invoke(Node, PermissionsUpdatedOpperation.Add);
         }
-
-        public bool AddPermission(string Node, bool Allow = true)
+        public void RemoveUserPermission(string Node)
         {
-            if (HasPermissionEntry(Node))
-                return false;
-
-            using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
-            using (SQLiteTransaction transaction = conn.BeginTransaction())
-            using (SQLiteCommand cmd = new SQLiteCommand($"INSERT INTO tblUserPermissions (\"UID\", \"Node\", \"Allow\") VALUES ({UID}, \"{Node}\", {Convert.ToInt32(Allow)});", conn, transaction))
-            {
-                try
-                {
-                    int Changes = cmd.ExecuteNonQuery();
-                    transaction.Commit();
-                    conn.Close();
-
-                    if (Changes == 0)
-                        return false;
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    transaction.Rollback();
-                    conn.Close();
-                    throw ex;
-                }
-            }
+            _UserPermissions.RemoveAll(x => x.Node == Node);
+            PermissionsUpdatedEvent?.Invoke(Node, PermissionsUpdatedOpperation.Remove);
         }
-        public bool RemovePermission(string Node)
+        public void UpdateUserPermission(string Node, bool Enabled)
         {
-            if (!HasPermissionEntry(Node))
-                return false;
-
-            using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
-            using (SQLiteTransaction transaction = conn.BeginTransaction())
-            using (SQLiteCommand cmd = new SQLiteCommand($"DELETE FROM tblUserPermissions WHERE UID = {UID} AND Node = \"{Node}\";", conn, transaction))
+            foreach (PermissionEntry entry in _UserPermissions.FindAll(x => x.Node == Node))
             {
-                try
-                {
-                    int Changes = cmd.ExecuteNonQuery();
-                    transaction.Commit();
-                    conn.Close();
-
-                    if (Changes == 0)
-                        return false;
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    transaction.Rollback();
-                    conn.Close();
-                    throw ex;
-                }
+                entry.Enabled = Enabled;
             }
+            PermissionsUpdatedEvent?.Invoke(Node, PermissionsUpdatedOpperation.Update);
         }
-        public bool HasPermission(string Node)
+        public bool HasUserPermission(string Node, bool CheckForEntry = false)
         {
             List<string> Nodes = Node.Split('.').ToList();
 
-            using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
-                while (true)
-                {
-                    using (SQLiteCommand cmd = new SQLiteCommand($"SELECT Node FROM tblUserPermissions WHERE UID = {UID} AND Node = \"{Core.Permissions.PermissionsManager.CombineNodes(Nodes)}\" AND Allow = 1;", conn))
-                    {
-
-                        if (cmd.ExecuteScalar() == null)
-                        {
-                            Nodes.RemoveAt(Nodes.Count - 1);
-
-                            if (Nodes.Count <= 0)
-                            {
-                                conn.Close();
-                                return false;
-                            }
-
-                            continue;
-                        }
-                        else
-                        {
-                            conn.Close();
-                            return true;
-                        }
-                    }
-                }
-        }
-        public bool HasPermissionEntry(string Node)
-        {
-            using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
-            using (SQLiteCommand cmd = new SQLiteCommand($"SELECT Node FROM tblUserPermissions WHERE UID = {UID} AND Node = \"{Node}\";", conn))
+            while (true)
             {
 
-                if (cmd.ExecuteScalar() == null)
+                if (_UserPermissions.Find(x => x.Node == Nodes.ToString()) == null)
                 {
-                    conn.Close();
-                    return false;
+                    Nodes.RemoveAt(Nodes.Count - 1);
+
+                    if (Nodes.Count <= 0)
+                    {
+                        return false;
+                    }
+                    continue;
                 }
                 else
                 {
-                    conn.Close();
-                    return true;
+                    if (CheckForEntry)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        if (_UserPermissions.Find(x => x.Node == Nodes.ToString()).Enabled)
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
                 }
             }
         }
-        public bool UpdatePermission(string Node, bool Allow)
-        {
-            if (!HasPermissionEntry(Node))
-                return false;
 
-            using (SQLiteConnection conn = new SQLiteConnection(_Manager.SQLiteConnectionString).OpenAndReturn())
-            using (SQLiteTransaction transaction = conn.BeginTransaction())
-            using (SQLiteCommand cmd = new SQLiteCommand($"UPDATE tblUserPermissions SET \"Allow\" = {Convert.ToInt32(Allow)} WHERE UID = {UID} AND Node = \"{Node}\";", conn, transaction))
+        private List<Group> _Groups;
+        public IEnumerable<string> Groups { get; }
+
+        public void AddGroup(string Node, bool Enabled)
+        {
+
+        }
+        public void RemoveGroup(string Node)
+        {
+
+        }
+        public bool HasGroupPermission(string Node, bool CheckForEntry = false)
+        {
+            foreach(Group group in _Groups)
             {
-                try
-                {
-                    int Changes = cmd.ExecuteNonQuery();
-                    transaction.Commit();
-                    conn.Close();
-
-                    if (Changes == 0)
-                        return false;
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    transaction.Rollback();
-                    conn.Close();
-                    throw ex;
-                }
+                group.HasPermission
             }
         }
-        // Firebase UID (Planned for website intergration in the future)
-        #endregion
+
+        public bool HasPermission(string Node, bool CheckForEntry = false)
+        {
+
+        }
+
+        public event PermissionsUpdated PermissionsUpdatedEvent;
+
     }
-    public class User : IUser
+
+    internal class Login : DataUpdated
     {
-        internal User(SaveManager.SaveManager Manager, int ID)
+        private int _UID;
+        public int UID
         {
-            UID = ID;
+            get { return _UID; }
+            set
+            {
+                _UID = value;
+                UpdatedEvent?.Invoke();
+            }
         }
 
-        #region Data
-        public int UID { get; set; }
-        public string Name { get; set; }
-        public string Character_Name { get; set; }
-        public Color UserColor { get; set; }
-        public bool isGM { get; set; }
-        #endregion
+        private string _Username;
+        public string Username
+        {
+            get { return _Username; }
+            set
+            {
+                _Username = value;
+                UpdatedEvent?.Invoke();
+            }
+        }
 
-        #region Permissions
-        public IReadOnlyList<KeyValuePair<string, bool>> Permissions { get; }
+        private string _Salt;
+        public string Salt
+        {
+            get { return _Salt; }
+            set
+            {
+                _Salt = value;
+                UpdatedEvent?.Invoke();
+            }
+        }
 
-        public bool AddPermission(string Node, bool Allow = true)
+        private string _Hash;
+        public string Hash
         {
-            throw new NotImplementedException();
+            get { return _Hash; }
+            set
+            {
+                _Hash = value;
+                UpdatedEvent?.Invoke();
+            }
         }
-        public bool RemovePermission(string Node)
-        {
-            throw new NotImplementedException();
-        }
-        public bool HasPermission(string Node)
-        {
-            throw new NotImplementedException();
-        }
-        public bool HasPermissionEntry(string Node)
-        {
-            throw new NotImplementedException();
-        }
-        public bool UpdatePermission(string Node, bool Allow)
-        {
-            throw new NotImplementedException();
-        }
-        // Firebase UID (Planned for website intergration in the future)
-        #endregion
-    }
-    public interface IUser
-    {
-        #region Data
-        int UID { get; }
-        string Name { get; set; }
-        string Character_Name { get; set; }
-        Color UserColor { get; set; }
-        bool isGM { get; set; }
-        #endregion
 
-        #region Permissions
-        IReadOnlyList<KeyValuePair<string, bool>> Permissions { get; }
+        private int _Security_Attempts;
+        public int Security_Attempts
+        {
+            get { return _Security_Attempts; }
+            set
+            {
+                _Security_Attempts = value;
+                UpdatedEvent?.Invoke();
+            }
+        }
 
-        bool AddPermission(string Node, bool Allow = true);
-        bool RemovePermission(string Node);
-        bool HasPermission(string Node);
-        bool HasPermissionEntry(string Node);
-        bool UpdatePermission(string Node, bool Allow);
-        // Firebase UID (Planned for website intergration in the future)
-        #endregion
+        private string _Security_LastAttempt;
+        public string Security_LastAttempt
+        {
+            get { return _Security_LastAttempt; }
+            set
+            {
+                _Security_LastAttempt = value;
+                UpdatedEvent?.Invoke();
+            }
+        }
+
+        private int _Security_Disabled;
+        public int Security_Disabled
+        {
+            get { return _Security_Disabled; }
+            set
+            {
+                _Security_Disabled = value;
+                UpdatedEvent?.Invoke();
+            }
+        }
+
+        public event UpdatedDataEventHandler UpdatedEvent;
     }
 }

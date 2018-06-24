@@ -121,7 +121,6 @@
     </Compile>
     <Compile Include="Authentication\AuthenticationManager.cs" />
     <Compile Include="Authentication\Data\Data.cs" />
-    <Compile Include="Authentication\Data\LoginEntry.cs" />
     <Compile Include="Authentication\Data\User.cs" />
     <Compile Include="Permissions\Data\Data.cs" />
     <Compile Include="Permissions\Data\Group.cs" />
@@ -132,6 +131,7 @@
     </Compile>
     <Compile Include="Permissions\PermissionsManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SaveManager\Helper\Save Manager Helper.cs" />
     <Compile Include="SaveManager\SaveManager.cs" />
     <Compile Include="SaveManager\SettingNames.Designer.cs">
       <AutoGen>True</AutoGen>

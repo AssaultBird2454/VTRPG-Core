@@ -85,7 +85,7 @@ namespace VTRPG.SaveEditor
         #region Base
         private void Load()
         {
-
+            Basic_Load();
         }
         #endregion
 
@@ -96,7 +96,7 @@ namespace VTRPG.SaveEditor
         }
         private void btnLoadChanges_Basic_Click(object sender, RoutedEventArgs e)
         {
-
+            Basic_Load();
         }
 
         private void btnSaveChanges_Campaign_Click(object sender, RoutedEventArgs e)
@@ -106,7 +106,7 @@ namespace VTRPG.SaveEditor
 
         private void btnLoadChanges_Campaign_Click(object sender, RoutedEventArgs e)
         {
-
+            Basic_Load();
         }
 
         private void btnSaveChanges_System_Click(object sender, RoutedEventArgs e)
@@ -116,7 +116,7 @@ namespace VTRPG.SaveEditor
 
         private void btnLoadChanges_System_Click(object sender, RoutedEventArgs e)
         {
-
+            Basic_Load();
         }
 
         public void Basic_Load()
@@ -127,14 +127,14 @@ namespace VTRPG.SaveEditor
         #endregion
 
         #region Auth
-        private void btnCreateUser_Click(object sender, RoutedEventArgs e)
+        private void btnUsers_CreateUser_Click(object sender, RoutedEventArgs e)
         {
-            UI.Auth.User user = new UI.Auth.User();
+            UI.Auth.User user = new UI.Auth.User(SaveManager.AuthManager);
             bool? pass = user.ShowDialog();
 
             if (pass == true)
             {
-                //SaveManager.AuthManager.RegisterUser();
+
             }
         }
 
@@ -144,6 +144,11 @@ namespace VTRPG.SaveEditor
         }
 
         private void btnDeleteUser_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+        
+        private void Auth_Reload()
         {
 
         }

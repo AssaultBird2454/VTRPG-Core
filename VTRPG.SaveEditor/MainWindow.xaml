@@ -46,6 +46,8 @@
                                 <Button x:Name="btnLoadChanges_Campaign" Content="Load Changes" HorizontalAlignment="Left" Margin="105,425,0,0" VerticalAlignment="Top" Width="90" Grid.Column="1" Click="btnLoadChanges_Campaign_Click"/>
                                 <Button x:Name="btnSaveChanges_System" Content="Save Changes" HorizontalAlignment="Left" Margin="10,425,0,0" VerticalAlignment="Top" Width="90" Grid.Column="2" Click="btnSaveChanges_System_Click"/>
                                 <Button x:Name="btnLoadChanges_System" Content="Load Changes" HorizontalAlignment="Left" Margin="105,425,0,0" VerticalAlignment="Top" Width="90" Grid.Column="2" Click="btnLoadChanges_System_Click"/>
+                                <ComboBox Grid.Column="1" Margin="97,31,10,0" VerticalAlignment="Top" Height="26"/>
+                                <Label Content="Primary System" HorizontalAlignment="Left" Margin="1,31,0,0" VerticalAlignment="Top" Grid.Column="1"/>
                             </Grid>
                         </TabItem>
                         <TabItem x:Name="tabUsers" Header="Users">
@@ -54,7 +56,7 @@
                                     <ColumnDefinition/>
                                     <ColumnDefinition Width="115"/>
                                 </Grid.ColumnDefinitions>
-                                <ListView x:Name="livUsers">
+                                <ListView x:Name="livUsers_Users">
                                     <ListView.View>
                                         <GridView>
                                             <GridViewColumn/>
@@ -63,21 +65,21 @@
                                 </ListView>
                                 <GroupBox Grid.Column="1" Header="User Management" Height="97" VerticalAlignment="Top">
                                     <Grid Margin="0">
-                                        <Button x:Name="btnCreateUser" Content="Add User" VerticalAlignment="Top" Click="btnCreateUser_Click"/>
-                                        <Button x:Name="btnEditUser" Content="Edit User" VerticalAlignment="Top" Margin="0,25,0,0" Click="btnEditUser_Click"/>
-                                        <Button x:Name="btnDeleteUser" Content="Remove User" VerticalAlignment="Top" Margin="0,50,0,0" Click="btnDeleteUser_Click"/>
+                                        <Button x:Name="btnUsers_CreateUser" Content="Add User" VerticalAlignment="Top" Click="btnUsers_CreateUser_Click"/>
+                                        <Button x:Name="btnUsers_EditUser" Content="Edit User" VerticalAlignment="Top" Margin="0,25,0,0" Click="btnEditUser_Click"/>
+                                        <Button x:Name="btnUsers_DeleteUser" Content="Remove User" VerticalAlignment="Top" Margin="0,50,0,0" Click="btnDeleteUser_Click"/>
                                     </Grid>
                                 </GroupBox>
                                 <GroupBox Grid.Column="1" Header="User Controls" Height="144" VerticalAlignment="Top" Margin="0,102,0,0">
                                     <Grid Margin="0">
-                                        <Button Content="Enable User" VerticalAlignment="Top"/>
-                                        <Button Content="Disable User" VerticalAlignment="Top" Margin="0,25,0,0"/>
-                                        <Button Content="Unlock User" VerticalAlignment="Top" Margin="0,50,0,0"/>
+                                        <Button x:Name="btnUsers_EnableUser" Content="Enable User" VerticalAlignment="Top"/>
+                                        <Button x:Name="btnUsers_DisableUser" Content="Disable User" VerticalAlignment="Top" Margin="0,25,0,0"/>
+                                        <Button x:Name="btnUsers_UnlockUser" Content="Unlock User" VerticalAlignment="Top" Margin="0,50,0,0"/>
                                     </Grid>
                                 </GroupBox>
                                 <GroupBox Grid.Column="1" Header="Other" Height="60" VerticalAlignment="Top" Margin="0,251,0,0">
                                     <Grid Margin="0">
-                                        <Button Content="Reload List" VerticalAlignment="Top"/>
+                                        <Button x:Name="btnUsers_ReloadUserList" Content="Reload List" VerticalAlignment="Top"/>
                                     </Grid>
                                 </GroupBox>
                             </Grid>
